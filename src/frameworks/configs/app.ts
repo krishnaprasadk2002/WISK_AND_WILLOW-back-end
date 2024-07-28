@@ -1,24 +1,31 @@
-import express,{Request,Response} from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import userRoute from "../router/userRouter";
 
-//initialize Express application
+// Initialize Express application
 const app = express();
 
-// Load environment variables from .env 
-dotenv.config()
+// Load environment variables from .env
+dotenv.config();
 
-//parse incoming url encoded form data
-app.use(express.urlencoded({extended:true}))
-const allowedOrgins = 
-    'http://localhost:4200' // allow req form angular application on localhost
+// Parse incoming URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
 
-//enable cors
+const allowedOrigins = [
+  'http://localhost:4200' // Allow requests from Angular application on localhost
+];
+
+// Enable CORS
 app.use(cors({
-    origin:allowedOrgins,
-    optionsSuccessStatus:200,
-    credentials:true
-}))
+  origin: allowedOrigins,
+  optionsSuccessStatus: 200,
+  credentials: true
+}));
+
+// User route setting
+app.use('/user', userRoute);
 
 
-export default app
+export default app;
