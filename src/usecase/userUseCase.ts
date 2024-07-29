@@ -1,19 +1,80 @@
+import mongoose from "mongoose";
+import nodemailer from "nodemailer";
+
+import { OtpRepository } from "../respository/otp.repository";
 import { UserRepository } from "../respository/userRepository";
+import crypto from "crypto";
+import IUsers from "../entities/user.entity";
 
-export class UserUseCase{
-    private userRep: UserRepository;
+export class UserUseCase {
+  private userRep: UserRepository;
+  private otpRep: OtpRepository;
 
-    constructor(userRepository: UserRepository) {
-        this.userRep = userRepository;
+  constructor(userRepository: UserRepository, otpRepository: OtpRepository) {
+    this.userRep = userRepository;
+    this.otpRep = otpRepository;
+  }
+
+  generateOtp(): string {
+    return crypto.randomInt(100000, 999999).toString();
+  }
+
+  async findUserByEmail(email: string): Promise<IUsers | null> {
+    return await this.userRep.findUserEmail(email);
+  }
+
+  async createOtp(userId:string, otp: string): Promise<void> {
+    await this.otpRep.createOtp(userId, otp);
+  }
+
+  async signUp(name: string, email: string, password: string, mobile: number) {
+    const existingUser = await this.userRep.findUserEmail(email);
+    if (existingUser) {
+      throw new Error("User already exists");
     }
 
-    async signUp(name: string, email: string, password: string, mobile: number) {
-        const existingUser = await this.userRep.findUserEmail(email);
-        if (existingUser) {
-            throw new Error("User already exists");
-        }
+    const user = await this.userRep.createUser(name, email, password, mobile);
+    const otp = crypto.randomInt(100000, 999999).toString();
+    await this.otpRep.createOtp(String(user._id), otp);
 
-        const user = await this.userRep.createUser(name, email, password, mobile);
-        return user;
+    await this.sendOtpEmail(email, otp);
+
+    return user;
+  }
+
+  async verifyOtp(userId: mongoose.Types.ObjectId, otp: string) {
+    const otpRecord = await this.otpRep.findOtp(userId, otp);
+    if (otpRecord) {
+      const updatedUser = await this.userRep.updateUserStatus(userId, true);
+      await this.otpRep.deleteOtp(userId);
+      return {
+        success: true,
+        message: "OTP verified successfully",
+        user: updatedUser,
+      };
+    } else {
+      throw new Error("Invalid OTP");
     }
+  }
+
+  sendOtpEmail(email: string, otp: string) {
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: "prasadkrishna1189@gmail.com",
+      to: email,
+      subject: "verify your email in WISK AND WILLOW EVENTS",
+      html: `your otp is:${otp}`,
+    };
+    return transporter.sendMail(mailOptions);
+  }
 }

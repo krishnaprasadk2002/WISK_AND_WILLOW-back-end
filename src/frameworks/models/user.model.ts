@@ -6,7 +6,7 @@ const UsersSchema: Schema = new Schema({
     email: { type: String, required: true },
     mobile: { type: String, required: true },
     password: { type: String, required: true },
-    is_Verifiyed: { type: Boolean,default:false },
+    is_Verified: { type: Boolean,default:false },
   });
   
   const Users = mongoose.model<IUsers>('Users', UsersSchema);

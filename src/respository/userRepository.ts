@@ -1,6 +1,7 @@
 import Users from "../frameworks/models/user.model";
 import IUsers from "../entities/user.entity";
 import { hashPassword } from "../frameworks/utils/hashedPassword";
+import mongoose from "mongoose";
 
 
 export class UserRepository{
@@ -17,4 +18,10 @@ export class UserRepository{
     async findUserEmail(email:string):Promise<IUsers | null>{
         return await Users.findOne({email})
     }
+
+    async updateUserStatus(userId: mongoose.Types.ObjectId, is_Verified: boolean) {
+        const result = await Users.findByIdAndUpdate(userId, { is_Verified }, { new: true });
+        return result;
+    }
+    
 }
