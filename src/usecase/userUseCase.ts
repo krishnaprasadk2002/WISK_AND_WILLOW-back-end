@@ -23,7 +23,7 @@ export class UserUseCase {
     return await this.userRep.findUserEmail(email);
   }
 
-  async createOtp(userId:string, otp: string): Promise<void> {
+  async createOtp(userId: string, otp: string): Promise<void> {
     await this.otpRep.createOtp(userId, otp);
   }
 

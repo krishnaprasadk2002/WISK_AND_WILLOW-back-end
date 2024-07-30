@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRoute from "../router/userRouter";
+import adminRouter from "../router/adminRouter";
 
 // Initialize Express application
 const app = express();
@@ -26,6 +27,9 @@ app.use(cors({
 
 // User route setting
 app.use('/user', userRoute);
+
+//admin route setting
+app.use('/admin',adminRouter)
 
 
 export default app;
