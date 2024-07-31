@@ -92,4 +92,16 @@ export class UserController {
       res.status(500).json({ message: 'Server error' });
     }
   }
+
+  async userLogout(req:Request,res:Response):Promise<void>{
+    this.userUseCase.logoutExecute()
+
+    res.clearCookie('token',{
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    })
+    console.log('User logged out');
+    res.status(200).json({ message: 'Logout successful' });
+  }
 }

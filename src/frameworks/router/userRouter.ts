@@ -16,5 +16,6 @@ router.post('/register', (req, res) => userController.userSignUp(req, res));
 router.post('/verify-otp',(req,res) => userController.verifyOtp(req,res))
 router.post('/resend-otp',(req,res)=>userController.resendOtp(req,res))
 router.post('/login',(req,res)=>userController.userLogin(req,res))
+router.post('/logout',(req,res)=>userController.userLogout(req,res))
 
 export default router;

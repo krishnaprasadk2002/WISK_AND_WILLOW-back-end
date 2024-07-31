@@ -7,6 +7,7 @@ export interface IUsers extends Document {
     mobile: String;
     password: String;
     is_Verified: Boolean;
+    status:Boolean;
   }
 
   export default IUsers

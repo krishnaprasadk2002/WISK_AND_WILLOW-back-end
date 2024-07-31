@@ -77,4 +77,8 @@ export class UserUseCase {
     };
     return transporter.sendMail(mailOptions);
   }
+
+  logoutExecute():void{
+    
+  }
 }

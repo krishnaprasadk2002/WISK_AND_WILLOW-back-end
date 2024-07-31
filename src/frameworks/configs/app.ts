@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from 'cookie-parser'
 import userRoute from "../router/userRouter";
 import adminRouter from "../router/adminRouter";
 
@@ -13,6 +14,8 @@ dotenv.config();
 // Parse incoming URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
+
+app.use(cookieParser())
 
 const allowedOrigins = [
   'http://localhost:4200' // Allow requests from Angular application on localhost
