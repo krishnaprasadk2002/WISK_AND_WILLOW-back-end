@@ -12,5 +12,6 @@ const adminController = new AdminController(adminUseCase)
 adminRouter.post('/login',(req,res)=>adminController.adminLogin(req,res))
 adminRouter.post('/logout', (req, res) => adminController.adminLogout(req, res));
 adminRouter.get('/userdata',(req,res)=>adminController.getUsers(req,res))
+adminRouter.post('/updateUserStaus',(req,res)=>adminController.UpdateUserStatus(req,res))
 
 export default adminRouter

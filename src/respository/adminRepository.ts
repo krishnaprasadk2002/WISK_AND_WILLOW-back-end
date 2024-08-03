@@ -22,6 +22,16 @@ export class AdminRepository {
         const users = await userModel.find()
         return users
     }
+
+    async updateUserStatus(user:IUsers):Promise<IUsers | null>{
+      const updatedUser = await userModel.findByIdAndUpdate(
+        user._id,
+        {status:user.status},
+        {new:true}
+      )
+
+      return updatedUser
+    }
 }
 
 export default new AdminRepository();

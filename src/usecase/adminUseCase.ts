@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken"
 import adminRepository from "../respository/adminRepository"
 import  AdminRepository  from "../respository/adminRepository"
+import Users from "../frameworks/models/user.model"
+import IUsers from "../entities/user.entity"
 export class AdminUseCase{
     constructor(){}
 
@@ -24,5 +26,7 @@ export class AdminUseCase{
         return adminRepository.getAllUsers()
     }
 
-
+    async updateStatus(user:IUsers):Promise<IUsers | null>{
+        return adminRepository.updateUserStatus(user)
+    }
 }
