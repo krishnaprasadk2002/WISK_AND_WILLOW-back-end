@@ -1,8 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 
 // Helper function to upload image to Cloudinary
-async function uploadCloudinary(imgBase64: string) {
-    // Configuration
+async function uploadCloudinary(filePath: string) {
     cloudinary.config({
         cloud_name: process.env.CLOUD_NAME,
         api_key: process.env.API_KEY,
@@ -10,9 +9,12 @@ async function uploadCloudinary(imgBase64: string) {
     });
 
     try {
-        const result = await cloudinary.uploader.upload(imgBase64, {
+        const result = await cloudinary.uploader.upload(filePath, {
             folder: 'Wisk_And_Willow',
+            
         });
+        console.log(result);
+        
         return result.secure_url;
     } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
@@ -20,6 +22,4 @@ async function uploadCloudinary(imgBase64: string) {
     }
 }
 
-
-export default uploadCloudinary
-
+export default uploadCloudinary;

@@ -11,6 +11,7 @@ const eventSchema = new Schema<IEvent | undefined>({
     image1: { type: String, required: true },
     image2: { type: String, required: true },
     image3: { type: String, required: true },
+    status:{type:Boolean,default:false}
 }, { timestamps: true });
 
 const Event = model<IEvent | undefined>('Event', eventSchema);

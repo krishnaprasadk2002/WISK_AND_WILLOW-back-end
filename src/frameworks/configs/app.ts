@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from 'cookie-parser'
 import userRoute from "../router/userRouter";
 import adminRouter from "../router/adminRouter";
-import evnetRouter from "../router/eventRouter";
+import eventRouter from "../router/eventRouter";
 
 // Initialize Express application
 const app = express();
@@ -40,7 +40,7 @@ app.use('/user', userRoute);
 app.use('/admin',adminRouter)
 
 //event route setting
-app.use('/event',evnetRouter)
+app.use('/event',eventRouter)
 
 
 export default app;
