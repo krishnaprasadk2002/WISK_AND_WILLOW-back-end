@@ -5,6 +5,7 @@ import { OtpRepository } from "../respository/otp.repository";
 import { UserRepository } from "../respository/userRepository";
 import crypto from "crypto";
 import IUsers from "../entities/user.entity";
+import uploadCloudinary from "../frameworks/configs/cloudinary";
 
 export class UserUseCase {
   private userRep: UserRepository;
@@ -78,7 +79,25 @@ export class UserUseCase {
     return transporter.sendMail(mailOptions);
   }
 
-  logoutExecute():void{
-    
+  logoutExecute(): void {
   }
+
+  async userProfileData(userId: string): Promise<IUsers | null> {
+    return this.userRep.findById(userId)
+  }
+
+  async updateUserProfile(userId: string, updateData: Partial<IUsers>): Promise<IUsers | null> {
+    return this.userRep.updateUserData(userId, updateData);
+  }
+
+  async updatePassword(userId: string, oldPassword: string, newPassword: string): Promise<IUsers | null> {
+    return this.userRep.updatePassword(userId, oldPassword, newPassword)
+  }
+
+  async updateProfileImage(userId: string, base64Image: string): Promise<string> {
+    const imageUrl = await uploadCloudinary(base64Image)
+    await this.userRep.updateProfilePicture(userId, imageUrl)
+    return imageUrl
+  }
+
 }

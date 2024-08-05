@@ -13,7 +13,7 @@ async function uploadCloudinary(filePath: string) {
             folder: 'Wisk_And_Willow',
             
         });
-        console.log(result);
+        // console.log(result);
         
         return result.secure_url;
     } catch (error) {

@@ -3,10 +3,17 @@ import jwt from 'jsonwebtoken';
 import IUsers from "../../entities/user.entity";
 
 export interface authenticatedRequest extends Request{
-    user:IUsers
+    user?:decodedUser
 }
 
-function authenticateToken(req:authenticatedRequest,res:Response,next:NextFunction){
+export interface decodedUser{
+        userId: string,
+        email: string,
+        iat: string,
+        exp: string
+}
+
+ export const authenticateToken = async(req:authenticatedRequest,res:Response,next:NextFunction)=>{
     const token = req.cookies.token;
 
     if(!token){
@@ -15,11 +22,10 @@ function authenticateToken(req:authenticatedRequest,res:Response,next:NextFuncti
 
     try {
         const decoded = jwt.verify(token,process.env.JWT_SECRET || 'wiskandwilow');
-        req.user = decoded as IUsers; // Store decoded token data in request object
+        req.user = decoded as unknown as decodedUser;        
         next()
     } catch (error) {
         return res.status(403).json({message:'Forbidden'})
     }
 }
 
-export default authenticateToken

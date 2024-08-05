@@ -7,6 +7,7 @@ const UsersSchema: Schema = new Schema({
     mobile: { type: String, required: true },
     password: { type: String, required: true },
     is_Verified: { type: Boolean,default:false },
+    imageUrl:{type: String},
     status:{type:Boolean,defalut:false}
   });
   

@@ -14,5 +14,6 @@ eventRouter.post('/addevent',(req,res)=>eventController.addEvent(req,res))
 eventRouter.get('/getevents', (req, res) => eventController.getAllEvents(req, res));
 eventRouter.post('/eventstatus', (req, res) => eventController.eventStatus(req, res));
 eventRouter.put('/editevent', (req,res) => eventController.updateEventData(req,res))
+eventRouter.get('/getEventByName/:name',(req,res)=>eventController.getEventByName(req,res))
 
 export default eventRouter

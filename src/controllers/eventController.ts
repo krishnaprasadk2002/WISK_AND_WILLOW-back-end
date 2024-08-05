@@ -76,4 +76,19 @@ export class EventController {
         
     }
 
+    async getEventByName(req:Request,res:Response):Promise<void>{
+      const name = req.params.name as string
+
+      try {
+        const event = await this.eventUseCase.getEventByName(name)
+        if(event){
+            res.json(event)
+        }else{
+            res.status(404).json({ message: 'Event not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ message: 'Error retrieving event', error });
+      }
+    }
+
 }

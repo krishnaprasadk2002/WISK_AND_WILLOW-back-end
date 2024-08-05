@@ -1,12 +1,13 @@
 import { Document, ObjectId } from "mongoose";
 
-export interface IUsers extends Document {
+export interface IUsers {
     _id: ObjectId;
-    name: String;
-    email: String;
-    mobile: String;
-    password: String;
+    name: string;
+    email: string;
+    mobile: string;
+    password: string;
     is_Verified: Boolean;
+    imageUrl?:string;
     status:Boolean;
   }
 

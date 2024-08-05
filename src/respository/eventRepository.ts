@@ -32,7 +32,18 @@ export class EventRepository  {
     }
 
     async updateEvent(id:string,updateData:IEvent):Promise<IEvent | null > {
+      for (let key in updateData) {
+        if (updateData[key as keyof IEvent] === undefined) {
+          delete updateData[key as keyof IEvent]; 
+        }
+      }
+      console.log(updateData,"UPP");
+      
       return Event.findByIdAndUpdate(id,updateData).exec()
+    }
+
+    async getEventByName(name:string):Promise<IEvent | null >{
+      return Event.findOne({name})
     }
     
     }

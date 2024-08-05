@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import userRoute from "../router/userRouter";
 import adminRouter from "../router/adminRouter";
 import eventRouter from "../router/eventRouter";
+import employeeRouter from "../router/employeeRouter";
 
 // Initialize Express application
 const app = express();
@@ -41,6 +42,9 @@ app.use('/admin',adminRouter)
 
 //event route setting
 app.use('/event',eventRouter)
+
+//employee route setting
+app.use('/employee',employeeRouter)
 
 
 export default app;
