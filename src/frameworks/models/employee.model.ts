@@ -7,7 +7,11 @@ const EmployeeSchema: Schema = new Schema({
     mobile: { type: String, required: true },
     type: { type: String, required: true },
     password: { type: String,required:true },
-    is_employee: { type: Boolean,default:false }
+    is_employee: {
+      type: String,
+      enum: ['Approved', 'Pending', 'Rejected'],
+      default: 'Pending',
+    },
     
   });
   

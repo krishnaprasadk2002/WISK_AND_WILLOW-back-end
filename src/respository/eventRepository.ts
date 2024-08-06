@@ -14,9 +14,9 @@ export class EventRepository  {
         return newEvent.save();
     }
 
-    async getEvents():Promise<IEvent[]>{
-        return Event.find()
-    }
+    async getEvents(): Promise<IEvent[]> {
+      return Event.find({ status: { $ne: true } });
+  }
 
     async updateEventStatus(event: IEvent): Promise<IEvent> {
         const updatedEvent = await Event.findByIdAndUpdate(

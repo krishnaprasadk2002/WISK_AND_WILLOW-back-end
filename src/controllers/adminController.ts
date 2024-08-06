@@ -12,7 +12,10 @@ export class AdminController {
     async adminLogin(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
 
-        const adminToken = this.adminUseCase.execute(email, password);
+        const adminToken: string | null = await this.adminUseCase.execute(email, password);
+
+        console.log(adminToken);
+        
 
         if (adminToken) {
             res.cookie('adminToken', adminToken, {
@@ -44,6 +47,15 @@ export class AdminController {
         try {
             const users = await this.adminUseCase.getAllUsers()
             res.json(users)
+        } catch (error) {
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+
+    async getEvnts(req:Request,res:Response){
+        try {
+            const events = await this.adminUseCase.getEvents()
+            res.json(events)
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
         }

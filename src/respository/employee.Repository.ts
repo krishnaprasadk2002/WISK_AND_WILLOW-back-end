@@ -17,4 +17,27 @@ export class employeeRepository{
         return await EmployeeModel.findOne({ email })
     }
 
+    async findByEmail(email: string): Promise<Employee | null> {
+        return await EmployeeModel.findOne({ email })
+    }
+
+    async getEmployees():Promise<Employee[]>{
+        return await EmployeeModel.find()
+    }
+
+    async updateEmployeeStatus(id: string, status: 'Approved' | 'Rejected'): Promise<Employee | null> {
+        const updateEmployee = await EmployeeModel.findByIdAndUpdate(
+            id,
+            {
+                $set: { is_employee: status }
+            },
+            {
+                new: true
+            }
+        );
+        console.log(updateEmployee);
+        
+        return updateEmployee;
+    }    
+
 }

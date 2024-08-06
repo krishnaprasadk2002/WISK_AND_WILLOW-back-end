@@ -4,6 +4,7 @@ import { UserController } from '../../controllers/userController';
 import { UserUseCase } from '../../usecase/userUseCase';
 import { UserRepository } from '../../respository/userRepository';
 import {authenticateToken} from '../middlewares/authenticateToken';
+import { checkUserStatus } from '../middlewares/userBlock';
 
 const userRepository = new UserRepository();
 const otpRepository = new OtpRepository()
@@ -17,8 +18,8 @@ router.post('/verify-otp',(req,res) => userController.verifyOtp(req,res))
 router.post('/resend-otp',(req,res)=>userController.resendOtp(req,res))
 router.post('/login',(req,res)=>userController.userLogin(req,res))
 router.post('/logout',(req,res)=>userController.userLogout(req,res))
-router.get('/userprofiledata',authenticateToken,(req,res)=>userController.userProfile(req,res));
-router.put('/updateprofile',authenticateToken,(req,res)=>userController.updateProfile(req,res))
-router.post('/profilePicture',authenticateToken,(req,res)=>userController.updateProfileImage(req,res))
+router.get('/userprofiledata',checkUserStatus,authenticateToken,(req,res)=>userController.userProfile(req,res));
+router.put('/updateprofile',checkUserStatus,authenticateToken,(req,res)=>userController.updateProfile(req,res))
+router.post('/profilePicture',checkUserStatus,authenticateToken,(req,res)=>userController.updateProfileImage(req,res))
 
 export default router;

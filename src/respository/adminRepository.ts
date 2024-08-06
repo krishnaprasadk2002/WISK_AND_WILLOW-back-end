@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv'
 import IUsers from '../entities/user.entity';
 import userModel from '../frameworks/models/user.model'
+import IEvent from '../entities/event.entity';
+import Event from '../frameworks/models/event.model';
 dotenv.config()
 
 export class AdminRepository {
@@ -31,6 +33,10 @@ export class AdminRepository {
       )
 
       return updatedUser
+    }
+
+    async getEvents(): Promise<IEvent[]> {
+        return Event.find()
     }
 }
 
