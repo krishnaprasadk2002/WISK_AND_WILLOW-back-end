@@ -6,6 +6,7 @@ import userRoute from "../router/userRouter";
 import adminRouter from "../router/adminRouter";
 import eventRouter from "../router/eventRouter";
 import employeeRouter from "../router/employeeRouter";
+import session from "express-session"
 
 // Initialize Express application
 const app = express();
@@ -14,12 +15,10 @@ const app = express();
 dotenv.config();
 
 
-
 const allowedOrigins = [
   'http://localhost:4200' // Allow requests from Angular application on localhost
 ];
 
-// Enable CORS
 // Apply CORS configuration immediately after initializing the app
 app.use(cors({
   origin: allowedOrigins,
@@ -32,6 +31,14 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser())
 
+
+//session config
+app.use(session({
+  resave: false,
+  saveUninitialized: true,
+  secret: process.env.SESSION_SECRET || 'default_secret',
+  cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true }
+}));
 
 
 // User route setting

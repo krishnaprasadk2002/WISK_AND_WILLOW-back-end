@@ -21,5 +21,9 @@ router.post('/logout',(req,res)=>userController.userLogout(req,res))
 router.get('/userprofiledata',checkUserStatus,authenticateToken,(req,res)=>userController.userProfile(req,res));
 router.put('/updateprofile',checkUserStatus,authenticateToken,(req,res)=>userController.updateProfile(req,res))
 router.post('/profilePicture',checkUserStatus,authenticateToken,(req,res)=>userController.updateProfileImage(req,res))
+router.post('/googlelogin',(req,res)=>userController.googleSignin(req,res))
+router.post('/forgot-password',(req,res)=>userController.forgetPassword(req,res))
+router.post('/reset-password', (req, res) => userController.resetPassword(req, res));
+
 
 export default router;

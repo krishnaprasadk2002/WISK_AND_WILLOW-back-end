@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
-
+import jwt from 'jsonwebtoken'
 import { OtpRepository } from "../respository/otp.repository";
 import { UserRepository } from "../respository/userRepository";
 import crypto from "crypto";
 import IUsers from "../entities/user.entity";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
+import verifyGoogleIdToken from "../frameworks/utils/googleVerfication";
+import bcrypt from "bcrypt"
+import { signJWT } from "../frameworks/utils/signJWT";
+import { error } from "console";
 
 export class UserUseCase {
   private userRep: UserRepository;
@@ -79,6 +83,42 @@ export class UserUseCase {
     return transporter.sendMail(mailOptions);
   }
 
+  async userGoogleLogin(data: string): Promise<string> {
+    const payload = await verifyGoogleIdToken(data);
+
+    if (!payload) {
+      throw new Error("Invalid Google token");
+    }
+
+    let user = await this.userRep.checkUser(payload.email as string);
+
+    if (!user) {
+      const userData: IUsers = {
+        email: payload.email,
+        name: payload.name,
+        password: payload.sub,
+        imageUrl: payload.picture,
+        isGoogleAuth: true,
+        status: false
+      } as unknown as IUsers;
+
+      await this.userRep.creteGoogleUser(userData.name,userData.email,userData.password,userData.imageUrl as string,true);
+      user = await this.userRep.checkUser(payload.email as string);
+    }
+
+    if (user) {
+      if (!user.isGoogleAuth) {
+        user.isGoogleAuth = true;
+      }
+    
+      const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || 'wiskandwillow', { expiresIn: '30d' });
+      await this.userRep.login(user, token); 
+      return token;
+  } else {
+      throw new Error("User not found after creation");
+  }
+}
+
   logoutExecute(): void {
   }
 
@@ -100,4 +140,63 @@ export class UserUseCase {
     return imageUrl
   }
 
+  async forgetPassword(email: string): Promise<void> {
+    const user = await this.userRep.findUserEmail(email);
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'wiskandwillow', { expiresIn: '1h' });
+
+    await this.userRep.savePasswordResetToken(user._id as unknown as string, token);
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    const mailOptions = {
+        to: email,
+        from: process.env.EMAIL_USER,
+        subject: 'Password Reset',
+        html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+               <a href="${resetLink}">${resetLink}</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
 }
+
+  
+
+
+async resetPassword(token: string, newPassword: string): Promise<void> {
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'wiskandwillow');
+    console.log("decided",decoded);
+
+    if (!decoded || !decoded.userId) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const user = await this.userRep.findById(decoded.userId);
+    console.log('usejhj',user);
+    
+    if (!user || user.resetPasswordToken !== token) {
+      throw new Error('Invalid token');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userRep.updateResetPassword(user._id as unknown as string, hashedPassword);
+    await this.userRep.clearPasswordResetToken(user._id as unknown as string);
+  } catch (error) {
+    throw new Error('Error processing reset password: ' + error);
+  }
+}
+
+  }

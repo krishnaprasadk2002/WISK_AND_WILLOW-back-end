@@ -1,5 +1,4 @@
 import express from "express";
-
 import { EventRepository } from "../../respository/eventRepository";
 import { EventUseCase } from "../../usecase/eventUseCase";
 import { EventController } from "../../controllers/eventController";
