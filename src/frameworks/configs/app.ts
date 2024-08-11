@@ -7,6 +7,7 @@ import adminRouter from "../router/adminRouter";
 import eventRouter from "../router/eventRouter";
 import employeeRouter from "../router/employeeRouter";
 import session from "express-session"
+import packageRouter from "../router/packageRouter";
 
 // Initialize Express application
 const app = express();
@@ -52,6 +53,9 @@ app.use('/event',eventRouter)
 
 //employee route setting
 app.use('/employee',employeeRouter)
+
+//Packages route setting
+app.use('/package',packageRouter)
 
 
 export default app;
