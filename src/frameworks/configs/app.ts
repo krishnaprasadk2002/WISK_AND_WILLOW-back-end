@@ -8,6 +8,8 @@ import eventRouter from "../router/eventRouter";
 import employeeRouter from "../router/employeeRouter";
 import session from "express-session"
 import packageRouter from "../router/packageRouter";
+import foodRouter from "../router/foodRouter";
+import galleryRouter from "../router/galleryRouter";
 
 // Initialize Express application
 const app = express();
@@ -56,6 +58,12 @@ app.use('/employee',employeeRouter)
 
 //Packages route setting
 app.use('/package',packageRouter)
+
+//food Route Setting
+app.use('/food',foodRouter)
+
+//gallery Route settting
+app.use('/gallery',galleryRouter)
 
 
 export default app;

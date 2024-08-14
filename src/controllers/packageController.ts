@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
-import { IPackages } from "../entities/packages.entity";
 import { PackageUseCase } from "../usecase/packagesUseCase";
+import uploadCloudinary from "../frameworks/configs/cloudinary";
 
 export class PackageController {
     constructor(private packageUseCase: PackageUseCase) { }
 
     async addPackage(req: Request, res: Response): Promise<void> {
         try {
-            const { name, type_of_event, startingAmount } = req.body;
-            const newPackage = await this.packageUseCase.addPackage(name, type_of_event, startingAmount);
+            const { name, type_of_event, startingAmount, image } = req.body;
+
+            const imageUrl = await uploadCloudinary(image)
+            const newPackage = await this.packageUseCase.addPackage(name, type_of_event, startingAmount, imageUrl);
             res.status(201).json(newPackage);
         } catch (error) {
             res.status(500).json({ message: 'Error adding package', error });
@@ -42,4 +44,53 @@ export class PackageController {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
+
+    async getPackageFeatures(req: Request, res: Response) {
+        try {
+            const packageDetails = await this.packageUseCase.getPackageFeatureDetails()
+            res.json(packageDetails)
+        } catch (error) {
+            res.status(500).json({ message: 'Error Fething packageDetails', error });
+        }
+    }
+
+    async getpackageDetailsById(req: Request, res: Response) {
+
+        const id = req.params.packageId;
+        console.log("package Id", id);
+        try {
+            const packageDetails = await this.packageUseCase.getPackageDetailsById(id)
+            res.status(200).json(packageDetails)
+        } catch (error) {
+            res.status(500).json({ message: 'Error Fething packageDetails', error });
+        }
+
+    }
+
+    async updateFeature(req: Request, res: Response): Promise<void> {
+        try {
+            const { packageId, featureData } = req.body;
+            console.log(`Package ID: ${packageId}`);
+            console.log(`Feature Data:`, featureData, "data");
+    
+            if (!packageId || !featureData || !featureData._id) {
+                res.status(400).json({ message: 'Invalid input or missing feature ID' });
+                return;
+            }
+    
+            const updatedFeature = await this.packageUseCase.editPacakgeFeatures(packageId, featureData);
+            if (updatedFeature) {
+                res.status(200).json(updatedFeature);
+            } else {
+                res.status(404).json({ message: 'Feature not found or update failed' });
+            }
+        } catch (error) {
+            console.error('Error updating feature:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+    
+      
+
+
 }
