@@ -30,8 +30,12 @@ export class AdminUseCase{
 
     }
 
-    async getAllUsers(){
-        return this.adminRep.getAllUsers()
+    async getAllUsers(page: number, limit: number): Promise<{ users: IUsers[], totalItems: number }> {
+        const skip = (page - 1) * limit;
+        const users = await this.adminRep.getAllUsers(limit, skip);
+        const totalItems = await this.adminRep.countAllUsers();
+
+        return { users, totalItems };
     }
 
     async updateStatus(user:IUsers):Promise<IUsers | null>{
@@ -40,5 +44,9 @@ export class AdminUseCase{
 
     async getEvents(): Promise<IEvent[]> {
         return this.adminRep.getEvents()
+    }
+
+    async onSerch(searchTerm:string):Promise<IUsers[]>{
+        return this.adminRep.onSearch(searchTerm)
     }
 }

@@ -10,9 +10,18 @@ export class FoodRepository{
         return formDataValues
     }
 
-    async getFoods(): Promise<IFood[]> {
-        return await Food.find() as IFood[];
+    async getFoods(page: number, itemsPerPage: number): Promise<IFood[]> {
+        const skip = (page - 1) * itemsPerPage;
+        return await Food.find()
+            .skip(skip)
+            .limit(itemsPerPage)
+            .exec() as IFood[];
     }
+    
+    async getFoodCount(): Promise<number> {
+        return await Food.countDocuments();
+    }
+    
 
     async editFoodData(foodId:string,foodData:IFood):Promise<IFood | null>{
         console.log(foodData);
@@ -20,6 +29,15 @@ export class FoodRepository{
         const updatedFood = await Food.findByIdAndUpdate( foodId,foodData, { new: true });
         return updatedFood
     }
-    
-      
+
+    async onSearch(searchTerm:string):Promise<IFood[]>{
+        return await Food.find({
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { category: { $regex: searchTerm, $options: 'i' } },
+                { section: { $regex: searchTerm, $options: 'i' } },
+                { status: { $regex: searchTerm, $options: 'i' } },
+            ]
+        })
+    }
 }

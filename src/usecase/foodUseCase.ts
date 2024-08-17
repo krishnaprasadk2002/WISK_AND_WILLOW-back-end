@@ -9,12 +9,19 @@ export class FoodUseCase{
     return await this.foodRep.addFood(foodData)
    }
 
-   async getFoods(): Promise<IFood[]> {
-    return await this.foodRep.getFoods()
-    }
+   async getFoods(page: number, itemsPerPage: number): Promise<{ foods: IFood[], totalItems: number }> {
+    const foods = await this.foodRep.getFoods(page, itemsPerPage);
+    const totalItems = await this.foodRep.getFoodCount();
+    return { foods, totalItems };
+}
+
 
     async editFood(foodId:string, foodData: IFood):Promise<IFood | null>{
       return await this.foodRep.editFoodData(foodId,foodData)
+    }
+
+    async onSerchFood(searchTerm:string):Promise<IFood[]>{
+      return await this.foodRep.onSearch(searchTerm)
     }
 
 }

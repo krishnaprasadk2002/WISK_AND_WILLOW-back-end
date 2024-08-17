@@ -15,7 +15,7 @@ export class AdminController {
         const adminToken: string | null = await this.adminUseCase.execute(email, password);
 
         console.log(adminToken);
-        
+
 
         if (adminToken) {
             res.cookie('adminToken', adminToken, {
@@ -43,16 +43,26 @@ export class AdminController {
         res.status(200).json({ message: 'Logout successful' });
     }
 
+    
     async getUsers(req: Request, res: Response): Promise<void> {
         try {
-            const users = await this.adminUseCase.getAllUsers()
-            res.json(users)
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const limit = parseInt(req.query.limit as string, 10) || 10;
+
+            const { users, totalItems } = await this.adminUseCase.getAllUsers(page, limit);
+
+            res.json({
+                users,
+                totalItems,
+                currentPage: page,
+                totalPages: Math.ceil(totalItems / limit)
+            });
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
         }
     }
 
-    async getEvnts(req:Request,res:Response){
+    async getEvnts(req: Request, res: Response) {
         try {
             const events = await this.adminUseCase.getEvents()
             res.json(events)
@@ -68,6 +78,17 @@ export class AdminController {
             res.status(200).json(updateUser)
         } catch (error) {
             res.status(500).json({ message: 'Failed to update user status' });
+        }
+    }
+
+    async onSearch(req: Request, res: Response) {
+        const searchTerm = req.query.searchTerm as string
+        try {
+            const searchResult = await this.adminUseCase.onSerch(searchTerm)
+            res.json(searchResult)
+        } catch (error) {
+            console.error('Error searching users:', error);
+            res.status(500).json({ message: 'Error searching users' });
         }
     }
 

@@ -29,13 +29,17 @@ export class FoodController {
 
     async getFood(req: Request, res: Response) {
         try {
-            const foodData = await this.foodUseCase.getFoods();
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+    
+            const foodData = await this.foodUseCase.getFoods(page, itemsPerPage);
             res.status(200).json(foodData);
         } catch (error) {
             console.error('Error Fetching food:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+    
 
     async editFood(req: Request, res: Response) {
         try {
@@ -62,4 +66,14 @@ export class FoodController {
         }
     }
     
+    async onSearch(req: Request, res: Response) {
+        const searchTerm = req.query.searchTerm as string
+        try {
+            const searchResult = await this.foodUseCase.onSerchFood(searchTerm)
+            res.json(searchResult)
+        } catch (error) {
+            console.error('Error searching users:', error);
+            res.status(500).json({ message: 'Error searching food' });
+        }
+    }
 }

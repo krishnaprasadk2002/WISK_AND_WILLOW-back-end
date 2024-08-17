@@ -3,6 +3,7 @@ import IUsers from '../entities/user.entity';
 import userModel from '../frameworks/models/user.model'
 import IEvent from '../entities/event.entity';
 import Event from '../frameworks/models/event.model';
+import Users from '../frameworks/models/user.model';
 dotenv.config()
 
 export class AdminRepository {
@@ -20,9 +21,12 @@ export class AdminRepository {
         return process.env.JWT_SECRET || 'wiskandwillow';
     }
 
-    async getAllUsers():Promise<IUsers[]>{
-        const users = await userModel.find()
-        return users
+    async getAllUsers(limit: number, skip: number): Promise<IUsers[]> {
+        return Users.find().limit(limit).skip(skip);
+    }
+
+    async countAllUsers(): Promise<number> {
+        return Users.countDocuments();
     }
 
     async updateUserStatus(user:IUsers):Promise<IUsers | null>{
@@ -37,6 +41,16 @@ export class AdminRepository {
 
     async getEvents(): Promise<IEvent[]> {
         return Event.find()
+    }
+
+    async onSearch(searchTerm:string):Promise<IUsers[]>{
+        return await Users.find({
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { email: { $regex: searchTerm, $options: 'i' } },
+                { mobile: { $regex: searchTerm, $options: 'i' } }
+            ]
+        })
     }
 }
 
