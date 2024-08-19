@@ -19,7 +19,9 @@ export class PackageController {
 
     async getPackages(req: Request, res: Response) {
         try {
-            const PackagesData = await this.packageUseCase.getPackages()
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+            const PackagesData = await this.packageUseCase.getPackages(page,itemsPerPage)
             res.status(200).json(PackagesData)
         } catch (error) {
             res.status(500).json({ message: 'Error Fething package', error });
@@ -90,7 +92,16 @@ export class PackageController {
         }
     }
     
-      
+    async onSearch(req: Request, res: Response) {
+        const searchTerm = req.query.searchTerm as string;
+        try {
+          const searchResult = await this.packageUseCase.onSearch(searchTerm);
+          res.json(searchResult);
+        } catch (error) {
+          console.error('Error searching users:', error);
+          res.status(500).json({ message: 'Error searching event' });
+        }
+      }
 
 
 }

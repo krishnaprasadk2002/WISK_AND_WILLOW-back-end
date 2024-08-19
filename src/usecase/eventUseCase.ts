@@ -56,5 +56,9 @@ export class EventUseCase {
         return this.eventRepository.getEventByName(name)
     }
 
+    async onSerch(searchTerm:string):Promise<IEvent[]>{
+        return this.eventRepository.onSearch(searchTerm)
+    }
+
 }
 

@@ -14,8 +14,7 @@ export class FoodRepository{
         const skip = (page - 1) * itemsPerPage;
         return await Food.find()
             .skip(skip)
-            .limit(itemsPerPage)
-            .exec() as IFood[];
+            .limit(itemsPerPage) as IFood[];
     }
     
     async getFoodCount(): Promise<number> {

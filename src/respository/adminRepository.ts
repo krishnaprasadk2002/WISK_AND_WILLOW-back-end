@@ -39,8 +39,15 @@ export class AdminRepository {
       return updatedUser
     }
 
-    async getEvents(): Promise<IEvent[]> {
-        return Event.find()
+    async getEvents(page: number, itemsPerPage: number): Promise<IEvent[]> {
+        const skip = (page - 1) * itemsPerPage;
+        return await Event.find()
+        .skip(skip)
+        .limit(itemsPerPage) as IEvent[]
+    }
+
+    async getEventCount():Promise<number>{
+        return await Event.countDocuments()
     }
 
     async onSearch(searchTerm:string):Promise<IUsers[]>{

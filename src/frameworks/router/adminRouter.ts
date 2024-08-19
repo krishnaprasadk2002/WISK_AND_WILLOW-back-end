@@ -3,6 +3,7 @@ import express from "express";
 import { AdminController } from "../../controllers/adminController";
 import { AdminRepository } from "../../respository/adminRepository";
 import {EventRepository } from '../../respository/eventRepository';
+import { adminAuthMiddleware } from '../middlewares/adminAuthentication';
 
 const adminRouter = express()
 
@@ -13,9 +14,10 @@ const adminController = new AdminController(adminUseCase)
 
 adminRouter.post('/login',(req,res)=>adminController.adminLogin(req,res))
 adminRouter.post('/logout', (req, res) => adminController.adminLogout(req, res));
-adminRouter.get('/userdata',(req,res)=>adminController.getUsers(req,res))
+adminRouter.get('/userdata',adminAuthMiddleware,(req,res)=>adminController.getUsers(req,res))
 adminRouter.post('/updateUserStaus',(req,res)=>adminController.UpdateUserStatus(req,res))
-adminRouter.get('/allevents',(req,res)=>adminController.getEvnts(req,res))
-adminRouter.get('/search',(req,res)=>adminController.onSearch(req,res))
+adminRouter.get('/allevents',adminAuthMiddleware,(req,res)=>adminController.getEvents(req,res))
+adminRouter.get('/search',adminAuthMiddleware,(req,res)=>adminController.onSearch(req,res))
+adminRouter.get('/isAuth',adminAuthMiddleware,(req,res)=>adminController.isAuth(req,res))
 
 export default adminRouter

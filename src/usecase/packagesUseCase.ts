@@ -8,8 +8,10 @@ async addPackage(name:string,type_of_event:string,startingAt:number,image:string
     return this.packageRep.addPackages(name,type_of_event,startingAt,image)
 }
 
-async getPackages():Promise<IPackages[]>{
-    return this.packageRep.getPackages()
+async getPackages(page: number, itemsPerPage: number):Promise<{packages:IPackages[], totalItems: number }>{
+  const packages = await this.packageRep.getPackages(page,itemsPerPage)
+  const totalItems = await this.packageRep.getPackageCount()
+    return {packages,totalItems}
 }
 
 async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promise<IPackages | null> {
@@ -26,6 +28,10 @@ async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promis
 
   async editPacakgeFeatures(packageId:string,featureData: IPackageItem): Promise<IPackageItem | null> {
     return await this.packageRep.updateFeature(packageId,featureData)
+  }
+
+  async onSearch(searchTerm:string):Promise<IPackages[]>{
+    return await this.packageRep.onSearch(searchTerm)
   }
 
 }

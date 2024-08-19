@@ -62,14 +62,17 @@ export class AdminController {
         }
     }
 
-    async getEvnts(req: Request, res: Response) {
+    async getEvents(req: Request, res: Response) {
         try {
-            const events = await this.adminUseCase.getEvents()
-            res.json(events)
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+            const events = await this.adminUseCase.getEvents(page, itemsPerPage);
+            res.json(events);
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
         }
     }
+    
 
     async UpdateUserStatus(req: Request, res: Response): Promise<void> {
         try {
@@ -90,6 +93,10 @@ export class AdminController {
             console.error('Error searching users:', error);
             res.status(500).json({ message: 'Error searching users' });
         }
+    }
+
+    async isAuth(req:Request,res:Response){
+        res.status(200).json({message:"Success"})
     }
 
 }

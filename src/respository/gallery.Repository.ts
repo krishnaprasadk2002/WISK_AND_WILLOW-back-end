@@ -21,8 +21,31 @@ export class GalleryRepository{
         return await GalleryCategory.find()
       }
 
-      async getgalleryImage():Promise<IGallery[]>{
+      async getgalleryImage(page: number, itemsPerPage: number):Promise<IGallery[]>{
+        const skip = (page - 1) * itemsPerPage;
         return await Gallery.find()
+            .skip(skip)
+            .limit(itemsPerPage) as IGallery[];
       }
+
+      async getGalleryImageCount(): Promise<number> {
+        return await Gallery.countDocuments();
+    }
+
+      async onSearch(searchTerm:string):Promise<IGallery[]>{
+        return await Gallery.find({
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { image_category: { $regex: searchTerm, $options: 'i' } },
+            ]
+        })
+    }
+
+    async updateGalleryData(galleryId:string,galleryData:IGallery):Promise<IGallery | null>{
+      return await Gallery.findByIdAndUpdate(galleryId,galleryData,{new:true})
+    }
       
+    async deleteGalleryById(galleryId: string): Promise<void> {
+      await Gallery.findByIdAndDelete(galleryId);
+    }
 }

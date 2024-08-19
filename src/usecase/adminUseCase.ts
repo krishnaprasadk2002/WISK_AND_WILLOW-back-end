@@ -42,8 +42,10 @@ export class AdminUseCase{
         return this.adminRep.updateUserStatus(user)
     }
 
-    async getEvents(): Promise<IEvent[]> {
-        return this.adminRep.getEvents()
+    async getEvents(page: number, itemsPerPage: number): Promise<{ event: IEvent[], totalItems: number }> {
+        const event = await this.adminRep.getEvents(page,itemsPerPage)
+        const totalItems = await this.adminRep.getEventCount()
+        return {event,totalItems}
     }
 
     async onSerch(searchTerm:string):Promise<IUsers[]>{

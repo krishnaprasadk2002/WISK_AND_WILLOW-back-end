@@ -8,9 +8,17 @@ export class PackageRepository{
         return newPackages.save()
     }
 
-    async getPackages():Promise<IPackages[]>{
-        return Packages.find({status:{$ne:true}})
+    async getPackages(page: number, itemsPerPage: number):Promise<IPackages[]>{
+      const skip = (page - 1) * itemsPerPage
+        return await Packages.find()
+        .skip(skip)
+      .limit(itemsPerPage) as IPackages[]
     }
+
+    
+  async getPackageCount():Promise<number>{
+    return await Packages.countDocuments()
+}
 
     async addPackageFeatures(packageId: string, packageItems: IPackages['packageItems']): Promise<IPackages | null> {
         return Packages.findByIdAndUpdate(
@@ -43,6 +51,15 @@ export class PackageRepository{
       }
       return null;
     }
+
+    async onSearch(searchTerm:string):Promise<IPackages[]>{
+      return await Packages.find({
+          $or: [
+              { name: { $regex: searchTerm, $options: 'i' } },
+              { type_of_event: { $regex: searchTerm, $options: 'i' } }
+          ]
+      })
+  }
     
     
   }

@@ -17,7 +17,21 @@ export class GalleryUseCase{
         return this.galleryRep.getgalleryCategory()
     }
     
-    async getgalleryImage():Promise<IGallery[]>{
-        return this.galleryRep.getgalleryImage()
+    async getgalleryImage(page: number, itemsPerPage: number): Promise<{ gallery: IGallery[], totalItems: number }>{
+        const gallery = await this.galleryRep.getgalleryImage(page,itemsPerPage)
+        const totalItems = await this.galleryRep.getGalleryImageCount()
+        return {gallery,totalItems}
+    }
+
+    async onSearch(searchTerm:string):Promise<IGallery[]>{
+        return await this.galleryRep.onSearch(searchTerm)
+    }
+
+    async updateGalleryData(galleryId:string,galleryData:IGallery):Promise<IGallery | null>{
+        return await this.galleryRep.updateGalleryData(galleryId,galleryData)
+    }
+
+    async deleteGalleryData(galleryId:string):Promise<void>{
+        await this.galleryRep.deleteGalleryById(galleryId)
     }
 }

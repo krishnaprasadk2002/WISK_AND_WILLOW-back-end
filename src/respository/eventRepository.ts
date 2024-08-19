@@ -45,5 +45,14 @@ export class EventRepository  {
     async getEventByName(name:string):Promise<IEvent | null >{
       return Event.findOne({name})
     }
+
+    
+    async onSearch(searchTerm:string):Promise<IEvent[]>{
+      return await Event.find({
+          $or: [
+              { name: { $regex: searchTerm, $options: 'i' } }
+          ]
+      })
+  }
     
     }

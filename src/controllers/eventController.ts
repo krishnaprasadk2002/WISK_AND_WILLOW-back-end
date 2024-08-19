@@ -37,7 +37,8 @@ export class EventController {
     //Fetching events
     async getAllEvents(req: Request, res: Response) {
         try {
-            const Events = await this.eventUseCase.getAllEvents()
+            const Events = await this.eventUseCase.getAllEvents();
+            
             res.status(200).json(Events)
         } catch (error) {
             res.status(500).json({ message: "Fetching events failed" });
@@ -90,5 +91,17 @@ export class EventController {
         res.status(500).json({ message: 'Error retrieving event', error });
       }
     }
+
+
+    async onSearch(req: Request, res: Response) {
+        const searchTerm = req.query.searchTerm as string;
+        try {
+          const searchResult = await this.eventUseCase.onSerch(searchTerm);
+          res.json(searchResult);
+        } catch (error) {
+          console.error('Error searching users:', error);
+          res.status(500).json({ message: 'Error searching event' });
+        }
+      }
 
 }
