@@ -109,4 +109,30 @@ export class GalleryController {
       res.status(500).send({ message: 'Error deleting gallery', error });
     }
   }
+
+  async getUniqueCategories(req: Request, res: Response): Promise<void> {
+    try {
+      const categories = await this.galleryUseCase.getUniqueCategories();
+      console.log(categories);
+      res.status(200).json(categories);
+    } catch (error) {
+      console.error('Error fetching unique categories:', error);
+      res.status(500).json({ message: 'Error fetching unique categories', error });
+    }
+  }
+
+  async getImagesByCategory(req: Request, res: Response): Promise<void> {
+    const category = req.params.category;
+    console.log(category,"params");
+    
+    try {
+        const images = await this.galleryUseCase.getImagesByCategory(category);
+        console.log(images);
+        
+        res.status(200).json(images);
+    } catch (error) {
+        console.error(`Error fetching images for category ${category}:`, error);
+        res.status(500).json({ message: `Error fetching images for category ${category}`, error });
+    }
+}
 }

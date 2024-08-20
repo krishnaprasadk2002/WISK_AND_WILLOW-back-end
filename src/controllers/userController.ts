@@ -231,4 +231,8 @@ export class UserController {
       res.status(500).json({ error: 'Error updating profile image' });
     }
   }
+
+  isAuth(req:Request,res:Response){
+    res.status(200).json({message:"Success"})
+  }
 }

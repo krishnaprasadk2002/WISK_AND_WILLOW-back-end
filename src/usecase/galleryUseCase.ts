@@ -34,4 +34,12 @@ export class GalleryUseCase{
     async deleteGalleryData(galleryId:string):Promise<void>{
         await this.galleryRep.deleteGalleryById(galleryId)
     }
+
+    async getUniqueCategories(): Promise<string[]> {
+        return this.galleryRep.findUniqueCategories();
+      }
+
+      async getImagesByCategory(category: string): Promise<IGallery[] | null> {
+        return this.galleryRep.getImagesByCategory(category);
+    }
 }

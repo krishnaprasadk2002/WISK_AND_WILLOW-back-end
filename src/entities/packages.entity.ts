@@ -1,10 +1,10 @@
 import mongoose, { ObjectId } from "mongoose";
 
 export interface IPackages {
-    _id: string;
+    _id?: string;
     name: String;
     type_of_event: string;
-    status: String;
+    status?: String;
     image:string
     startingAt: Number;
     packageItems?: IPackageItem[];

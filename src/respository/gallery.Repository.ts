@@ -48,4 +48,14 @@ export class GalleryRepository{
     async deleteGalleryById(galleryId: string): Promise<void> {
       await Gallery.findByIdAndDelete(galleryId);
     }
-}
+
+    async findUniqueCategories(): Promise<string[]> {
+      const categories = await Gallery.distinct('image_category');
+      return categories.map(category => category.toString());
+    }
+
+    async getImagesByCategory(category: string): Promise<IGallery[]| null > {
+      return Gallery.findOne({ image_category: category });
+  }
+  
+  }

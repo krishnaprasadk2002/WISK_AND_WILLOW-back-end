@@ -24,6 +24,6 @@ router.post('/profilePicture',checkUserStatus,authenticateToken,(req,res)=>userC
 router.post('/googlelogin',(req,res)=>userController.googleSignin(req,res))
 router.post('/forgot-password',(req,res)=>userController.forgetPassword(req,res))
 router.post('/reset-password', (req, res) => userController.resetPassword(req, res));
-
+router.get('/isAuth',authenticateToken,(req,res)=>userController.isAuth(req,res))
 
 export default router;

@@ -1,3 +1,4 @@
+import { promises } from "dns";
 import { IPackageItem, IPackages } from "../entities/packages.entity";
 import { PackageRepository } from "../respository/packageRepository";
 
@@ -8,10 +9,15 @@ async addPackage(name:string,type_of_event:string,startingAt:number,image:string
     return this.packageRep.addPackages(name,type_of_event,startingAt,image)
 }
 
-async getPackages(page: number, itemsPerPage: number):Promise<{packages:IPackages[], totalItems: number }>{
-  const packages = await this.packageRep.getPackages(page,itemsPerPage)
-  const totalItems = await this.packageRep.getPackageCount()
-    return {packages,totalItems}
+async getPackages(page: number, itemsPerPage: number): Promise<{ packages: IPackages[], totalItems: number }> {
+  const skip = (page - 1) * itemsPerPage;
+  const packages = await this.packageRep.getPackages(skip, itemsPerPage);
+  const totalItems = await this.packageRep.getPackageCount();
+  return { packages, totalItems };
+}
+
+async loadPackage():Promise<IPackages[]>{
+return this.packageRep.loadPackage()
 }
 
 async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promise<IPackages | null> {
@@ -32,6 +38,14 @@ async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promis
 
   async onSearch(searchTerm:string):Promise<IPackages[]>{
     return await this.packageRep.onSearch(searchTerm)
+  }
+
+  async updatePackage(packageId:string,packageData:IPackages):Promise<IPackages | null>{
+    return await this.packageRep.updatePackage(packageId,packageData)
+  }
+
+  async deletePackage(packageId:string):Promise<void | null>{
+    return await this.packageRep.deletePackage(packageId)
   }
 
 }

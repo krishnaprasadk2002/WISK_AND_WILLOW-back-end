@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
 import { PackageUseCase } from "../usecase/packagesUseCase";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
+import { IPackages } from "../entities/packages.entity";
 
 export class PackageController {
     constructor(private packageUseCase: PackageUseCase) { }
 
     async addPackage(req: Request, res: Response): Promise<void> {
         try {
-            const { name, type_of_event, startingAmount, image } = req.body;
-
+            const { name, type_of_event, startingAmount, image } = req.body
+            console.log(req.body);
+            
             const imageUrl = await uploadCloudinary(image)
             const newPackage = await this.packageUseCase.addPackage(name, type_of_event, startingAmount, imageUrl);
             res.status(201).json(newPackage);
@@ -17,16 +19,30 @@ export class PackageController {
         }
     }
 
-    async getPackages(req: Request, res: Response) {
+    async getPackages(req: Request, res: Response): Promise<void> {
         try {
-            const page = parseInt(req.query.page as string, 10) || 1;
-            const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
-            const PackagesData = await this.packageUseCase.getPackages(page,itemsPerPage)
-            res.status(200).json(PackagesData)
+          const page = parseInt(req.query.page as string, 10) || 1;
+          const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+          const packagesData = await this.packageUseCase.getPackages(page, itemsPerPage);
+          res.status(200).json(packagesData);
         } catch (error) {
-            res.status(500).json({ message: 'Error Fething package', error });
+          console.error('Error fetching packages:', error);
+          res.status(500).json({ message: 'Error fetching packages', error });
         }
-    }
+      }
+
+      async loadPackage(req: Request, res: Response) {
+        try {
+          const packageData = await this.packageUseCase.loadPackage();
+          console.log('Fetched package data:', packageData); 
+          res.status(200).json(packageData);
+        } catch (error) {
+          console.error('Error fetching packages:', error);
+          res.status(500).json({ message: 'Error fetching packages', error });
+        }
+      }
+      
+      
 
     async addPackageFeatures(req: Request, res: Response) {
 
@@ -103,5 +119,53 @@ export class PackageController {
         }
       }
 
+      async editPackage(req:Request,res:Response){
+        try {
+            const packageId= req.body.packageId
+            const {name,type_of_event,startingAmount,image} = req.body.packageData
+            console.log(packageId);
+            
+            console.log(name,type_of_event,startingAmount,image);
+            
+
+            const imageUrl =await uploadCloudinary(image)
+           
+            const packageData:IPackages = {
+                name,
+                type_of_event,
+                startingAt:startingAmount,
+                image:imageUrl
+              };
+    
+              const updatedPackage = await this.packageUseCase.updatePackage(packageId,packageData)
+              res.status(200).json(updatedPackage)
+    
+        } catch (error) {
+            res.status(500).json({message: 'Failed to update package',error});
+        }
+      }
+
+      async deletePacakge(req: Request, res: Response): Promise<void> {
+        try {
+            const packageId = req.query.packageId as string;
+    
+            if (!packageId) {
+                res.status(400).json({ message: 'Package ID is required' });
+                return;
+            }
+    
+            const result = await this.packageUseCase.deletePackage(packageId);
+            
+            if (result) {
+                res.status(200).json({ message: 'Package deleted successfully' });
+            } else {
+                res.status(404).json({ message: 'Package not found' });
+            }
+        } catch (error) {
+            console.error('Error deleting package:', error);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+    
 
 }
