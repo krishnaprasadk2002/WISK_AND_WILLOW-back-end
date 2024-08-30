@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AdminUseCase } from "../usecase/adminUseCase";
-
+import { HttpStatusCode } from '../enums/httpStatusCodes';
 
 export class AdminController {
     private adminUseCase: AdminUseCase
@@ -24,9 +24,9 @@ export class AdminController {
                 maxAge: 3600000,
                 sameSite: 'strict',
             })
-            res.status(200).json({ message: 'Login successful' });
+            res.status(HttpStatusCode.OK).json({ message: 'Login successful' });
         } else {
-            res.status(401).json({ message: 'Invalid email or password' });
+            res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Invalid email or password' });
         }
     }
 
@@ -40,7 +40,7 @@ export class AdminController {
             sameSite: 'strict',
         })
         console.log('admin logged out');
-        res.status(200).json({ message: 'Logout successful' });
+        res.status(HttpStatusCode.OK).json({ message: 'Logout successful' });
     }
 
     
@@ -58,7 +58,7 @@ export class AdminController {
                 totalPages: Math.ceil(totalItems / limit)
             });
         } catch (error) {
-            res.status(500).json({ message: 'Server error' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Server error' });
         }
     }
 
@@ -69,7 +69,7 @@ export class AdminController {
             const events = await this.adminUseCase.getEvents(page, itemsPerPage);
             res.json(events);
         } catch (error) {
-            res.status(500).json({ message: 'Server error' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Server error' });
         }
     }
     
@@ -78,9 +78,9 @@ export class AdminController {
         try {
             const user = req.body
             const updateUser = await this.adminUseCase.updateStatus(user);
-            res.status(200).json(updateUser)
+            res.status(HttpStatusCode.OK).json(updateUser)
         } catch (error) {
-            res.status(500).json({ message: 'Failed to update user status' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Failed to update user status' });
         }
     }
 
@@ -91,12 +91,12 @@ export class AdminController {
             res.json(searchResult)
         } catch (error) {
             console.error('Error searching users:', error);
-            res.status(500).json({ message: 'Error searching users' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error searching users' });
         }
     }
 
     async isAuth(req:Request,res:Response){
-        res.status(200).json({message:"Success"})
+        res.status(HttpStatusCode.OK).json({message:"Success"})
     }
 
 }

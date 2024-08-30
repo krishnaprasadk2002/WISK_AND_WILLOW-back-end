@@ -19,5 +19,8 @@ packageRouter.put('/editpackagefeature',(req,res)=>packageController.updateFeatu
 packageRouter.get('/search',adminAuthMiddleware,(req,res)=>packageController.onSearch(req,res))
 packageRouter.put('/editpackages',(req,res)=>packageController.editPackage(req,res))
 packageRouter.delete('/deletepackage',(req,res)=>packageController.deletePacakge(req,res))
+packageRouter.get('/getpackagedatabyname',(req,res) => packageController.getPackageDetailsByName(req,res))
+packageRouter.get('/getfoods',(req,res) => packageController.getPackageFood(req,res))
+packageRouter.put('/updatestartingamount',(req,res)=>packageController.updateStartingAmount(req,res))
 
 export default packageRouter

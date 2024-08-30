@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PackageUseCase } from "../usecase/packagesUseCase";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import { IPackages } from "../entities/packages.entity";
+import { HttpStatusCode } from "../enums/httpStatusCodes";
 
 export class PackageController {
     constructor(private packageUseCase: PackageUseCase) { }
@@ -9,40 +10,38 @@ export class PackageController {
     async addPackage(req: Request, res: Response): Promise<void> {
         try {
             const { name, type_of_event, startingAmount, image } = req.body
-            console.log(req.body);
-            
+
             const imageUrl = await uploadCloudinary(image)
             const newPackage = await this.packageUseCase.addPackage(name, type_of_event, startingAmount, imageUrl);
-            res.status(201).json(newPackage);
+            res.status(HttpStatusCode.CREATED).json(newPackage);
         } catch (error) {
-            res.status(500).json({ message: 'Error adding package', error });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error adding package', error });
         }
     }
 
     async getPackages(req: Request, res: Response): Promise<void> {
         try {
-          const page = parseInt(req.query.page as string, 10) || 1;
-          const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
-          const packagesData = await this.packageUseCase.getPackages(page, itemsPerPage);
-          res.status(200).json(packagesData);
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+            const packagesData = await this.packageUseCase.getPackages(page, itemsPerPage);
+            res.status(HttpStatusCode.OK).json(packagesData);
         } catch (error) {
-          console.error('Error fetching packages:', error);
-          res.status(500).json({ message: 'Error fetching packages', error });
+            console.error('Error fetching packages:', error);
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching packages', error });
         }
-      }
+    }
 
-      async loadPackage(req: Request, res: Response) {
+    async loadPackage(req: Request, res: Response) {
         try {
-          const packageData = await this.packageUseCase.loadPackage();
-          console.log('Fetched package data:', packageData); 
-          res.status(200).json(packageData);
+            const packageData = await this.packageUseCase.loadPackage();
+            res.status(HttpStatusCode.OK).json(packageData);
         } catch (error) {
-          console.error('Error fetching packages:', error);
-          res.status(500).json({ message: 'Error fetching packages', error });
+            console.error('Error fetching packages:', error);
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching packages', error });
         }
-      }
-      
-      
+    }
+
+
 
     async addPackageFeatures(req: Request, res: Response) {
 
@@ -50,16 +49,16 @@ export class PackageController {
         const { packageItems } = req.body;
         try {
             if (!Array.isArray(packageItems)) {
-                return res.status(400).json({ error: 'Invalid package items format' });
+                return res.status(HttpStatusCode.BAD_REQUEST).json({ error: 'Invalid package items format' });
             }
             const upadtePackage = await this.packageUseCase.addPackageFeature(packageId, packageItems)
             if (!upadtePackage) {
-                return res.status(404).json({ error: 'Package not found' });
+                return res.status(HttpStatusCode.NOT_FOUND).json({ error: 'Package not found' });
             }
-            res.status(200).json(upadtePackage);
+            res.status(HttpStatusCode.OK).json(upadtePackage);
         } catch (error) {
             console.error('Error adding package features:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
         }
     }
 
@@ -68,19 +67,19 @@ export class PackageController {
             const packageDetails = await this.packageUseCase.getPackageFeatureDetails()
             res.json(packageDetails)
         } catch (error) {
-            res.status(500).json({ message: 'Error Fething packageDetails', error });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error Fething packageDetails', error });
         }
     }
 
     async getpackageDetailsById(req: Request, res: Response) {
 
         const id = req.params.packageId;
-        console.log("package Id", id);
+
         try {
             const packageDetails = await this.packageUseCase.getPackageDetailsById(id)
-            res.status(200).json(packageDetails)
+            res.status(HttpStatusCode.OK).json(packageDetails)
         } catch (error) {
-            res.status(500).json({ message: 'Error Fething packageDetails', error });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error Fething packageDetails', error });
         }
 
     }
@@ -88,84 +87,107 @@ export class PackageController {
     async updateFeature(req: Request, res: Response): Promise<void> {
         try {
             const { packageId, featureData } = req.body;
-            console.log(`Package ID: ${packageId}`);
-            console.log(`Feature Data:`, featureData, "data");
-    
+
             if (!packageId || !featureData || !featureData._id) {
-                res.status(400).json({ message: 'Invalid input or missing feature ID' });
+                res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'Invalid input or missing feature ID' });
                 return;
             }
-    
+
             const updatedFeature = await this.packageUseCase.editPacakgeFeatures(packageId, featureData);
             if (updatedFeature) {
-                res.status(200).json(updatedFeature);
+                res.status(HttpStatusCode.OK).json(updatedFeature);
             } else {
-                res.status(404).json({ message: 'Feature not found or update failed' });
+                res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Feature not found or update failed' });
             }
         } catch (error) {
             console.error('Error updating feature:', error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
         }
     }
-    
+
     async onSearch(req: Request, res: Response) {
         const searchTerm = req.query.searchTerm as string;
         try {
-          const searchResult = await this.packageUseCase.onSearch(searchTerm);
-          res.json(searchResult);
+            const searchResult = await this.packageUseCase.onSearch(searchTerm);
+            res.json(searchResult);
         } catch (error) {
-          console.error('Error searching users:', error);
-          res.status(500).json({ message: 'Error searching event' });
+            console.error('Error searching users:', error);
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error searching event' });
         }
-      }
+    }
 
-      async editPackage(req:Request,res:Response){
+    async editPackage(req: Request, res: Response) {
         try {
-            const packageId= req.body.packageId
-            const {name,type_of_event,startingAmount,image} = req.body.packageData
-            console.log(packageId);
-            
-            console.log(name,type_of_event,startingAmount,image);
-            
+            const packageId = req.body.packageId
+            const { name, type_of_event, startingAmount, image } = req.body.packageData
 
-            const imageUrl =await uploadCloudinary(image)
-           
-            const packageData:IPackages = {
+            const imageUrl = await uploadCloudinary(image)
+
+            const packageData: IPackages = {
                 name,
                 type_of_event,
-                startingAt:startingAmount,
-                image:imageUrl
-              };
-    
-              const updatedPackage = await this.packageUseCase.updatePackage(packageId,packageData)
-              res.status(200).json(updatedPackage)
-    
-        } catch (error) {
-            res.status(500).json({message: 'Failed to update package',error});
-        }
-      }
+                startingAt: startingAmount,
+                image: imageUrl
+            };
 
-      async deletePacakge(req: Request, res: Response): Promise<void> {
+            const updatedPackage = await this.packageUseCase.updatePackage(packageId, packageData)
+            res.status(HttpStatusCode.OK).json(updatedPackage)
+
+        } catch (error) {
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Failed to update package', error });
+        }
+    }
+
+    async deletePacakge(req: Request, res: Response): Promise<void> {
         try {
             const packageId = req.query.packageId as string;
-    
+
             if (!packageId) {
-                res.status(400).json({ message: 'Package ID is required' });
+                res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'Package ID is required' });
                 return;
             }
-    
+
             const result = await this.packageUseCase.deletePackage(packageId);
-            
+
             if (result) {
-                res.status(200).json({ message: 'Package deleted successfully' });
+                res.status(HttpStatusCode.OK).json({ message: 'Package deleted successfully' });
             } else {
-                res.status(404).json({ message: 'Package not found' });
+                res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Package not found' });
             }
         } catch (error) {
             console.error('Error deleting package:', error);
-            res.status(500).json({ message: 'Internal Server Error' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
         }
     }
-    
 
+    async getPackageDetailsByName(req: Request, res: Response) {
+        const packageName = req.query.name as string
+        try {
+            const result = await this.packageUseCase.getPackageDetailsByName(packageName)
+            res.status(HttpStatusCode.OK).json(result)
+        } catch (error) {
+            console.error('Error fetching packages', error);
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+        }
+    }
+
+    async getPackageFood(req: Request, res: Response) {
+        try {
+            const result = await this.packageUseCase.getPackageFood()
+            res.status(HttpStatusCode.OK).json(result)
+        } catch (error) {
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+        }
+    }
+
+    async updateStartingAmount(req:Request,res:Response){
+        const { packageId, startingAmount } = req.body;
+        try {
+            const result = await this.packageUseCase.updateStartingAmount(packageId,startingAmount)
+            res.status(HttpStatusCode.OK).json({ message: 'Package updated successfully', data: result })
+        } catch (error) {
+            console.error('Error in PackagesController.updateStartingAmount:', error);
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json( error);
+        }
+    }
 }

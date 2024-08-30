@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { EventUseCase } from '../usecase/eventUseCase';
-import IEvent from '../entities/event.entity';
-
+import { HttpStatusCode } from '../enums/httpStatusCodes';
 
 export class EventController {
 
@@ -12,8 +11,6 @@ export class EventController {
 
     async addEvent(req: Request, res: Response): Promise<void> {
         try {
-
-            console.log("test", req.body);
 
             const { name, description, event_heading, event_content, event_services, event_features, image1, image2, image3 } = req.body;
             const newEvent = await this.eventUseCase.addEvent({
@@ -27,10 +24,10 @@ export class EventController {
                 image2,
                 image3
             })
-            res.status(201).json({ message: 'Event added successfully', event: newEvent });
+            res.status(HttpStatusCode.CREATED).json({ message: 'Event added successfully', event: newEvent });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error adding event' });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error adding event' });
         }
     }
 
@@ -39,9 +36,9 @@ export class EventController {
         try {
             const Events = await this.eventUseCase.getAllEvents();
             
-            res.status(200).json(Events)
+            res.status(HttpStatusCode.OK).json(Events)
         } catch (error) {
-            res.status(500).json({ message: "Fetching events failed" });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Fetching events failed" });
         }
     }
 
@@ -50,9 +47,9 @@ export class EventController {
         try {
             const event = req.body;
             const updateEvents = await this.eventUseCase.eventStatus(event);
-            res.status(200).json(updateEvents);
+            res.status(HttpStatusCode.OK).json(updateEvents);
         } catch (error) {
-            res.status(500).json({ message: "Updating event status failed" });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Updating event status failed" });
         }
     }
 
@@ -66,13 +63,13 @@ export class EventController {
             const updateEvent = await this.eventUseCase.updateEvent(id,updateData)
 
             if(!updateEvent){
-                res.status(404).json({ message: 'Event not found' });
+                res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Event not found' });
                 return;
             }
 
-            res.status(200).json(updateEvent)
+            res.status(HttpStatusCode.OK).json(updateEvent)
         } catch (error) {
-            res.status(500).json({ message: "event data updation failed" });
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "event data updation failed" });
         }
         
     }
@@ -85,10 +82,10 @@ export class EventController {
         if(event){
             res.json(event)
         }else{
-            res.status(404).json({ message: 'Event not found' });
+            res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Event not found' });
         }
       } catch (error) {
-        res.status(500).json({ message: 'Error retrieving event', error });
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error retrieving event', error });
       }
     }
 
@@ -100,7 +97,7 @@ export class EventController {
           res.json(searchResult);
         } catch (error) {
           console.error('Error searching users:', error);
-          res.status(500).json({ message: 'Error searching event' });
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error searching event' });
         }
       }
 

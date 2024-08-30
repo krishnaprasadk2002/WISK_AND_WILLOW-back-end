@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { GalleryUseCase } from "../usecase/galleryUseCase";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
-import Gallery from "../frameworks/models/gallery.model";
+import { HttpStatusCode } from "../enums/httpStatusCodes";
 
 export class GalleryController {
   constructor(private galleryUseCase: GalleryUseCase) { }
@@ -10,7 +10,7 @@ export class GalleryController {
     const { name, image, category } = req.body;
 
     if (!name || !image || !category) {
-      return res.status(400).json({ message: 'Name, image, and category are required.' });
+      return res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'Name, image, and category are required.' });
     }
 
     try {
@@ -23,32 +23,43 @@ export class GalleryController {
       };
       const savedImage = await this.galleryUseCase.addImage(galleryData);
 
-      res.status(200).json(savedImage);
+      res.status(HttpStatusCode.OK).json(savedImage);
     } catch (error) {
       console.error('Error adding image:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
 
   async addgalleryCategory(req: Request, res: Response) {
-    const { categoryName } = req.body;
-    console.log("categoryname", categoryName);
+    const { categoryName, categoryImage } = req.body;
+  
     try {
-      const savedGalleryCategory = await this.galleryUseCase.addGalleryCategory({ name: categoryName });
-      res.status(200).json(savedGalleryCategory);
+
+      const existingCategory = await this.galleryUseCase.findCategoryByName(categoryName);
+  
+      if (existingCategory) {
+        return res.status(HttpStatusCode.CONFLICT).json({ message: 'Category already exists' });
+      }
+
+      const imageUrl = await uploadCloudinary(categoryImage); 
+      const savedGalleryCategory = await this.galleryUseCase.addGalleryCategory({ name: categoryName, image: imageUrl });
+      
+      res.status(HttpStatusCode.OK).json(savedGalleryCategory);
     } catch (error) {
       console.error('Error saving category', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
+  
+  
 
   async getgalleryCategory(req: Request, res: Response) {
     try {
       const categoryData = await this.galleryUseCase.getGalleryCategory()
-      res.status(200).json(categoryData)
+      res.status(HttpStatusCode.OK).json(categoryData)
     } catch (error) {
       console.error('Error Fecthing category', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
 
@@ -59,10 +70,10 @@ export class GalleryController {
       const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
 
       const GalleryData = await this.galleryUseCase.getgalleryImage(page, itemsPerPage)
-      res.status(200).json(GalleryData)
+      res.status(HttpStatusCode.OK).json(GalleryData)
     } catch (error) {
       console.error('Error Fecthing image', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal server error' });
     }
   }
 
@@ -73,7 +84,7 @@ export class GalleryController {
       res.json(searchResult);
     } catch (error) {
       console.error('Error searching users:', error);
-      res.status(500).json({ message: 'Error searching gallery' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error searching gallery' });
     }
   }
 
@@ -90,12 +101,12 @@ export class GalleryController {
       }
       const updatedGallery = await this.galleryUseCase.updateGalleryData(galleryId, galleryData)
       if (!updatedGallery) {
-        return res.status(404).json({ message: 'Gallery item not found' });
+        return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Gallery item not found' });
       }
-      return res.status(200).json(updatedGallery);
+      return res.status(HttpStatusCode.OK).json(updatedGallery);
     } catch (error) {
       console.error('Error updating gallery:', error);
-      return res.status(500).json({ message: 'Failed to update gallery item' });
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Failed to update gallery item' });
     }
   }
 
@@ -104,35 +115,29 @@ export class GalleryController {
 
     try {
       await this.galleryUseCase.deleteGalleryData(galleryId as string);
-      res.status(200).send({ message: 'Gallery deleted successfully' });
+      res.status(HttpStatusCode.OK).send({ message: 'Gallery deleted successfully' });
     } catch (error) {
-      res.status(500).send({ message: 'Error deleting gallery', error });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Error deleting gallery', error });
     }
   }
 
-  async getUniqueCategories(req: Request, res: Response): Promise<void> {
+  async getGalleryCategoryData(req: Request, res: Response): Promise<void> {
     try {
-      const categories = await this.galleryUseCase.getUniqueCategories();
-      console.log(categories);
-      res.status(200).json(categories);
+      const categoryData = await this.galleryUseCase.galleryCategoryData();
+      res.status(HttpStatusCode.OK).json(categoryData);
     } catch (error) {
-      console.error('Error fetching unique categories:', error);
-      res.status(500).json({ message: 'Error fetching unique categories', error });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Gallery category data fetching error', error });
     }
   }
-
-  async getImagesByCategory(req: Request, res: Response): Promise<void> {
-    const category = req.params.category;
-    console.log(category,"params");
-    
+  
+  async getgalleryImageByName(req: Request, res: Response) {
+    const name = req.query.name as string;
     try {
-        const images = await this.galleryUseCase.getImagesByCategory(category);
-        console.log(images);
-        
-        res.status(200).json(images);
+      const galleryImage = await this.galleryUseCase.getGalleryImages(name);
+      res.status(HttpStatusCode.OK).json(galleryImage);
     } catch (error) {
-        console.error(`Error fetching images for category ${category}:`, error);
-        res.status(500).json({ message: `Error fetching images for category ${category}`, error });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Gallery Image data fetching error', error });
     }
-}
+  }
+  
 }

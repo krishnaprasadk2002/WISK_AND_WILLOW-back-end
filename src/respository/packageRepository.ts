@@ -1,4 +1,6 @@
+import IFood from "../entities/food.entity";
 import { IPackageItem, IPackages } from "../entities/packages.entity";
+import Food from "../frameworks/models/food.Model";
 import Packages from "../frameworks/models/package.model";
 
 export class PackageRepository {
@@ -70,4 +72,21 @@ export class PackageRepository {
     return await Packages.findByIdAndDelete(packageId)
   }
 
+  async getPackageDetailsByName(packageName: string): Promise<IPackages | null> {
+    const packageData = await Packages.findOne({ name: packageName })
+    return packageData;
+  }
+  
+  async getPackageFood():Promise<IFood[]>{
+    return await Food.find()
+  }
+
+  async updateStartingAmount(packageId: string, startingAmount: string): Promise<IPackages | null> {
+      const updatedPackage = await Packages.findByIdAndUpdate(
+        packageId,
+        { startingAt: startingAmount },
+        { new: true }
+      )
+      return updatedPackage;
+}
 }

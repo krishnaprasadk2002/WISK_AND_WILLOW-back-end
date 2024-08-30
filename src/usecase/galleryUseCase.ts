@@ -13,6 +13,10 @@ export class GalleryUseCase{
         return this.galleryRep.addGalleryCategory(categoryData)
     }
 
+    async findCategoryByName(name: string): Promise<IGalleryCategory | null> {
+        return this.galleryRep.findCategoryByName(name);
+      }
+
     async getGalleryCategory():Promise<IGalleryCategory[]>{
         return this.galleryRep.getgalleryCategory()
     }
@@ -35,11 +39,12 @@ export class GalleryUseCase{
         await this.galleryRep.deleteGalleryById(galleryId)
     }
 
-    async getUniqueCategories(): Promise<string[]> {
-        return this.galleryRep.findUniqueCategories();
+    async galleryCategoryData(): Promise<IGalleryCategory[]> {
+        return await this.galleryRep.GetGalleryCategoryData();
       }
 
-      async getImagesByCategory(category: string): Promise<IGallery[] | null> {
-        return this.galleryRep.getImagesByCategory(category);
+    async getGalleryImages(name:string):Promise<IGallery[]>{
+        return await this.galleryRep.getGalleryImageData(name)
     }
+      
 }

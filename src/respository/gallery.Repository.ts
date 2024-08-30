@@ -17,6 +17,10 @@ export class GalleryRepository{
         return newCategory;
       }
 
+      async findCategoryByName(name: string): Promise<IGalleryCategory | null> {
+        return GalleryCategory.findOne({ name });
+      }
+
       async getgalleryCategory():Promise<IGalleryCategory[]>{
         return await GalleryCategory.find()
       }
@@ -49,13 +53,12 @@ export class GalleryRepository{
       await Gallery.findByIdAndDelete(galleryId);
     }
 
-    async findUniqueCategories(): Promise<string[]> {
-      const categories = await Gallery.distinct('image_category');
-      return categories.map(category => category.toString());
+    async GetGalleryCategoryData(): Promise<IGalleryCategory[]> {
+      return await GalleryCategory.find().limit(9);
+    }
+  
+    async getGalleryImageData(name: string): Promise<IGallery[]> {
+      return await Gallery.find({ image_category: name }).limit(9)
     }
 
-    async getImagesByCategory(category: string): Promise<IGallery[]| null > {
-      return Gallery.findOne({ image_category: category });
-  }
-  
   }

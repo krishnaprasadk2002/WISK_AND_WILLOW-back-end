@@ -3,7 +3,7 @@ import { UserUseCase } from "../usecase/userUseCase";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { authenticatedRequest } from "../frameworks/middlewares/authenticateToken";
-import verifyGoogleIdToken from "../frameworks/utils/googleVerfication";
+
 
 export class UserController {
   private userUseCase: UserUseCase;

@@ -17,8 +17,8 @@ galleryRouter.get('/getgalleryImage',adminAuthMiddleware,(req,res)=> galleryCont
 galleryRouter.get('/search', adminAuthMiddleware,(req, res) => galleryController.onSearch(req, res));
 galleryRouter.put('/editgalleryimage',(req, res) => galleryController.editGalleryImage(req, res));
 galleryRouter.delete('/deleteGalleryData',(req, res) => galleryController.deleteGalleryData(req, res))
-galleryRouter.get('/getuniquecategory',(req,res)=>galleryController.getUniqueCategories(req,res))
-galleryRouter.get('/images/:category', (req, res) => galleryController.getImagesByCategory(req, res));
+galleryRouter.get('/getuniquecategory',(req,res)=>galleryController.getGalleryCategoryData(req,res))
+galleryRouter.get('/getgalleryimages', (req, res) => galleryController.getgalleryImageByName(req, res));
 
 
 export default galleryRouter

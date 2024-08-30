@@ -1,6 +1,7 @@
 import { promises } from "dns";
 import { IPackageItem, IPackages } from "../entities/packages.entity";
 import { PackageRepository } from "../respository/packageRepository";
+import IFood from "../entities/food.entity";
 
 export class PackageUseCase{
     constructor(private packageRep:PackageRepository){}
@@ -46,6 +47,19 @@ async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promis
 
   async deletePackage(packageId:string):Promise<void | null>{
     return await this.packageRep.deletePackage(packageId)
+  }
+
+  async getPackageDetailsByName(packageName:string):Promise<IPackages | null>{
+    return await this.packageRep.getPackageDetailsByName(packageName)
+  }
+
+  async getPackageFood():Promise<IFood[]>{
+    return await this.packageRep.getPackageFood()
+  }
+
+  async updateStartingAmount(packageId:string,startingAmount:string):Promise<IPackages | null>{
+    const updatedPackage = await this.packageRep.updateStartingAmount(packageId, startingAmount)
+    return updatedPackage
   }
 
 }

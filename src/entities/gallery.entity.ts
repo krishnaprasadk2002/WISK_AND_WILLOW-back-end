@@ -9,4 +9,5 @@ export interface IGallery{
 
 export interface IGalleryCategory{
   name:string
+  image:string
 }
