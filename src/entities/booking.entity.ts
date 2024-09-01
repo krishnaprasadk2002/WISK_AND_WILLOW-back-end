@@ -9,6 +9,7 @@ export interface ICartItem {
   }
   
   export interface IBooking {
+    paymentOrderId: string;
     packageDetails: string;
     name: string;
     email: string;
@@ -23,9 +24,10 @@ export interface ICartItem {
     foodPrice: number;
     advancePayment: number;
     balanceAmount: number;
+    nowPayableAmount: number;
     paymentId?: string; 
     created_at?: Date;
-    status:string
+    status:string;
   }
 
   export interface IRazorpayOrder {

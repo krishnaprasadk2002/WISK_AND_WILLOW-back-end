@@ -27,8 +27,10 @@ const BookingSchema: Schema = new Schema({
   eventWithoutFoodPrice: { type: Number, required: true },
   foodPrice: { type: Number, required: true },
   advancePayment: { type: Number, required: true },
+  nowPayableAmount: { type: Number, required: true },
   balanceAmount: { type: Number, required: true },
-  paymentId: { type: String },
+  paymentOrderId: { type: String }, 
+  paymentId: { type: String },  
   created_at: { type: Date, default: Date.now },
   status:{type:String, default:"pending",enum:["pending","failed","successful"]}
 });

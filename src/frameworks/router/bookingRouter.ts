@@ -11,5 +11,6 @@ const bookingController = new BookingController(bookingUseCase)
 
 bookingRouter.post('/createbooking',(req, res) => bookingController.createBooking(req, res));
 bookingRouter.post('/verifypayment',(req, res) => bookingController.verifyPayment(req, res));
+bookingRouter.post('/updateStatus',(req,res)=>bookingController.updateBookingStatus(req,res))
 
 export default bookingRouter
