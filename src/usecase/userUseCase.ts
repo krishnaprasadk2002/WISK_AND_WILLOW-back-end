@@ -8,8 +8,7 @@ import IUsers from "../entities/user.entity";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import verifyGoogleIdToken from "../frameworks/utils/googleVerfication";
 import bcrypt from "bcrypt"
-import { signJWT } from "../frameworks/utils/signJWT";
-import { error } from "console";
+
 
 export class UserUseCase {
   private userRep: UserRepository;

@@ -1,4 +1,3 @@
-import { promises } from "dns";
 import { IPackageItem, IPackages } from "../entities/packages.entity";
 import { PackageRepository } from "../respository/packageRepository";
 import IFood from "../entities/food.entity";

@@ -10,6 +10,7 @@ import session from "express-session"
 import packageRouter from "../router/packageRouter";
 import foodRouter from "../router/foodRouter";
 import galleryRouter from "../router/galleryRouter";
+import bookingRouter from "../router/bookingRouter";
 
 // Initialize Express application
 const app = express();
@@ -64,6 +65,9 @@ app.use('/food',foodRouter)
 
 //gallery Route settting
 app.use('/gallery',galleryRouter)
+
+//booking routeSetting
+app.use('/booking',bookingRouter)
 
 
 export default app;

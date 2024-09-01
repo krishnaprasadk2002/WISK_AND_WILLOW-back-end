@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken"
 import { AdminRepository } from "../respository/adminRepository"
 import  {EventRepository}  from "../respository/eventRepository"
-import Users from "../frameworks/models/user.model"
 import IUsers from "../entities/user.entity"
 import IEvent from "../entities/event.entity"
-import Event from "../frameworks/models/event.model"
+
 export class AdminUseCase{
     constructor(private eventRepository: EventRepository,private adminRep:AdminRepository){
         this.eventRepository = eventRepository
