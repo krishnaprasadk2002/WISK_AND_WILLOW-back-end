@@ -9,6 +9,7 @@ export interface ICartItem {
   }
   
   export interface IBooking {
+    _id:string
     paymentOrderId: string;
     packageDetails: string;
     name: string;

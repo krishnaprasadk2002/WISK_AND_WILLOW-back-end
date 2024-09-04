@@ -11,6 +11,7 @@ import packageRouter from "../router/packageRouter";
 import foodRouter from "../router/foodRouter";
 import galleryRouter from "../router/galleryRouter";
 import bookingRouter from "../router/bookingRouter";
+import bannerRouter from "../router/bannerRouter";
 
 // Initialize Express application
 const app = express();
@@ -68,6 +69,9 @@ app.use('/gallery',galleryRouter)
 
 //booking routeSetting
 app.use('/booking',bookingRouter)
+
+//banner routeSet
+app.use('/banner',bannerRouter)
 
 
 export default app;

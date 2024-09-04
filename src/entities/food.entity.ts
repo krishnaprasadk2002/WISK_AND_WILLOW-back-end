@@ -9,8 +9,7 @@ export interface IFood {
 enum FoodSection    {
     WelcomeDrink = 'Welcome Drink',
     MainFood = 'Main Food',
-    Dessert = 'Dessert',
-    Other = 'Other',
+    Dessert = 'Dessert'
   }
 
 export default IFood

@@ -3,9 +3,10 @@ import IUsers from "../entities/user.entity";
 import { hashPassword } from "../frameworks/utils/hashedPassword";
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt'
+import { IUserRepository } from "../interfaces/repositories/userRepository";
 
 
-export class UserRepository {
+export class UserRepository implements IUserRepository {
     constructor() {
 
     }
@@ -20,9 +21,9 @@ export class UserRepository {
         return await Users.findOne({ email })
     }
 
-    async updateUserStatus(userId: mongoose.Types.ObjectId, is_Verified: boolean) {
-        const result = await Users.findByIdAndUpdate(userId, { is_Verified }, { new: true });
-        return result;
+    async updateUserStatus(userId: mongoose.Types.ObjectId, is_Verified: boolean):Promise<IUsers | null> {
+        return await Users.findByIdAndUpdate(userId, { is_Verified }, { new: true });
+    
     }
 
     async findById(id: string): Promise<IUsers | null> {

@@ -8,10 +8,11 @@ import IUsers from "../entities/user.entity";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import verifyGoogleIdToken from "../frameworks/utils/googleVerfication";
 import bcrypt from "bcrypt"
+import { IUserRepository } from "../interfaces/repositories/userRepository";
 
 
 export class UserUseCase {
-  private userRep: UserRepository;
+  private userRep: IUserRepository;
   private otpRep: OtpRepository;
 
   constructor(userRepository: UserRepository, otpRepository: OtpRepository) {
@@ -101,7 +102,7 @@ export class UserUseCase {
         status: false
       } as unknown as IUsers;
 
-      await this.userRep.creteGoogleUser(userData.name,userData.email,userData.password,userData.imageUrl as string,true);
+      await this.userRep.creteGoogleUser(userData.name,userData.email,userData.password,userData.imageUrl as string,true,true);
       user = await this.userRep.checkUser(payload.email as string);
     }
 
