@@ -3,6 +3,7 @@ import { UserUseCase } from "../usecase/userUseCase";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { authenticatedRequest } from "../frameworks/middlewares/authenticateToken";
+import { HttpStatusCode } from "../enums/httpStatusCodes";
 
 
 export class UserController {
@@ -18,12 +19,12 @@ export class UserController {
     const { name, email, password, mobile } = req.body;
     try {
       const user = await this.userUseCase.signUp(name, email, password, mobile);
-      res.status(201).json(user);
+      res.status(HttpStatusCode.CREATED).json(user);
     } catch (error) {
       if (error instanceof Error) {
-        res.status(400).json({ message: error.message });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
       } else {
-        res.status(400).json({ message: "An unknown error occurred" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "An unknown error occurred" });
       }
     }
   }
@@ -32,12 +33,12 @@ export class UserController {
     try {
       const { userId, otp } = req.body
       const result = await this.userUseCase.verifyOtp(userId, otp);
-      res.status(200).json(result)
+      res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
       if (error instanceof Error) {
-        res.status(400).json({ message: error.message });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
       } else {
-        res.status(400).json({ message: "An unknown error occurred" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "An unknown error occurred" });
       }
     }
   }
@@ -47,18 +48,18 @@ export class UserController {
     try {
       const user = await this.userUseCase.findUserByEmail(email);
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'User not found' });
       }
 
       const otp = this.userUseCase.generateOtp();
       await this.userUseCase.createOtp(String(user._id), otp);
       await this.userUseCase.sendOtpEmail(email, otp);
 
-      res.status(200).json({ message: 'OTP resent successfully' });
+      res.status(HttpStatusCode.OK).json({ message: 'OTP resent successfully' });
 
     } catch (error) {
       console.error('Error during OTP resend', error);
-      res.status(500).json({ message: 'An error occurred during OTP resend' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'An error occurred during OTP resend' });
     }
   }
 
@@ -68,7 +69,7 @@ export class UserController {
       const user = await this.userUseCase.findUserByEmail(email);
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(HttpStatusCode.NOT_FOUND).json({ message: "User not found" });
       }
 
       if (!user.is_Verified) {
@@ -77,19 +78,19 @@ export class UserController {
         await this.userUseCase.createOtp(String(user._id), otp);
         await this.userUseCase.sendOtpEmail(user.email, otp);
 
-        return res.status(403).json({
+        return res.status(HttpStatusCode.FORBIDDEN).json({
           message: 'Account not verified. Please verify your account.',
           userId: user._id
         });
       }
 
       if (user.status) {
-        return res.status(403).json({ message: 'Your account is blocked' });
+        return res.status(HttpStatusCode.FORBIDDEN).json({ message: 'Your account is blocked' });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password as string);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid password" });
+        return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid password" });
       }
 
       // Token generation
@@ -101,10 +102,10 @@ export class UserController {
         maxAge: 3600000
       });
 
-      return res.status(200).json({ message: 'Login success', token });
+      return res.status(HttpStatusCode.OK).json({ message: 'Login success', token });
     } catch (error) {
       console.error('Error during user login:', error);
-      res.status(500).json({ message: 'Server error' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Server error' });
     }
   }
 
@@ -120,13 +121,13 @@ export class UserController {
           sameSite: 'strict',
           maxAge: 3600000
         })
-        return res.status(200).json({ message: 'Google Authentication successful', token: jwtToken })
+        return res.status(HttpStatusCode.OK).json({ message: 'Google Authentication successful', token: jwtToken })
       } else {
-        res.status(401).json({ message: 'Authentication Failed' })
+        res.status(HttpStatusCode.UNAUTHORIZED).json({ message: 'Authentication Failed' })
       }
     } catch (error) {
       console.error("Goole Atuh error", error)
-      return res.status(500).json({ message: 'Internal Server Error' });
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
     }
   }
 
@@ -135,12 +136,12 @@ export class UserController {
     const { email } = req.body;
     try {
       await this.userUseCase.forgetPassword(email);
-      return res.status(200).json({ message: 'Password reset link sent to your email' });
+      return res.status(HttpStatusCode.OK).json({ message: 'Password reset link sent to your email' });
     } catch (error) {
       if (error instanceof Error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
       } else {
-        return res.status(400).json({ message: 'An unknown error occurred' });
+        return res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'An unknown error occurred' });
       }
     }
   }
@@ -153,12 +154,12 @@ export class UserController {
   
     try {
       await this.userUseCase.resetPassword(token, password);
-      return res.status(200).json({ message: 'Password has been reset' });
+      return res.status(HttpStatusCode.OK).json({ message: 'Password has been reset' });
     } catch (error) {
       if (error instanceof Error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(HttpStatusCode.BAD_REQUEST).json({ message: error.message });
       } else {
-        return res.status(400).json({ message: 'An unknown error occurred' });
+        return res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'An unknown error occurred' });
       }
     }
   }
@@ -173,7 +174,7 @@ export class UserController {
       sameSite: 'strict',
     })
     console.log('User logged out');
-    res.status(200).json({ message: 'Logout successful' });
+    res.status(HttpStatusCode.OK).json({ message: 'Logout successful' });
   }
 
   async userProfile(req: authenticatedRequest, res: Response) {
@@ -182,7 +183,7 @@ export class UserController {
       const user = await this.userUseCase.userProfileData(userId)
 
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'User not found' });
       }
 
       res.json({
@@ -192,7 +193,7 @@ export class UserController {
         imageUrl: user.imageUrl
       })
     } catch (error) {
-      res.status(500).json({ message: 'An error occurred' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'An error occurred' });
     }
   }
 
@@ -209,10 +210,10 @@ export class UserController {
       if (UpdatedUser) {
         res.json(UpdatedUser)
       } else {
-        res.status(404).json({ message: 'User not found' });
+        res.status(HttpStatusCode.NOT_FOUND).json({ message: 'User not found' });
       }
     } catch (error) {
-      res.status(500).json({ message: 'Error updating profile', error });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error updating profile', error });
     }
   }
 
@@ -225,14 +226,32 @@ export class UserController {
       console.log(base64Image);
 
       const imageUrl = await this.userUseCase.updateProfileImage(userId as string, base64Image)
-      res.status(200).json({ url: imageUrl })
+      res.status(HttpStatusCode.OK).json({ url: imageUrl })
 
     } catch (error) {
-      res.status(500).json({ error: 'Error updating profile image' });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Error updating profile image' });
     }
   }
 
   isAuth(req:Request,res:Response){
-    res.status(200).json({message:"Success"})
+    res.status(HttpStatusCode.OK).json({message:"Success"})
   }
+
+    async getUserDetailsByChat (req: authenticatedRequest, res: Response) {
+    try {
+      const userId = req.user?.userId; 
+      if (!userId) {
+        return res.status(HttpStatusCode.UNAUTHORIZED).json({ error: 'User ID not found' });
+      }
+      const userData = await this.userUseCase.getUserDetails(userId); 
+      if (!userData) {
+        return res.status(HttpStatusCode.NOT_FOUND).json({ error: 'User not found' });
+      }
+      return res.status(HttpStatusCode.OK).json(userData);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    }
+  };
+  
 }

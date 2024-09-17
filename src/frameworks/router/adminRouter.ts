@@ -19,5 +19,7 @@ adminRouter.post('/updateUserStaus',(req,res)=>adminController.UpdateUserStatus(
 adminRouter.get('/allevents',adminAuthMiddleware,(req,res)=>adminController.getEvents(req,res))
 adminRouter.get('/search',adminAuthMiddleware,(req,res)=>adminController.onSearch(req,res))
 adminRouter.get('/isAuth',adminAuthMiddleware,(req,res)=>adminController.isAuth(req,res))
+adminRouter.get('/getdashboard',adminAuthMiddleware,(req,res)=>adminController.getDashBoardData(req,res))
+adminRouter.get('/monthly-bookings',adminAuthMiddleware,(req,res)=>adminController.getDashBoardChart(req,res))
 
 export default adminRouter

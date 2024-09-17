@@ -3,9 +3,11 @@ import { AdminRepository } from "../respository/adminRepository"
 import  {EventRepository}  from "../respository/eventRepository"
 import IUsers from "../entities/user.entity"
 import IEvent from "../entities/event.entity"
+import { IAdminRepository } from "../interfaces/repositories/adminRepository"
+import { IDashboard, MonthlyBooking } from "../entities/dashboard.entity"
 
 export class AdminUseCase{
-    constructor(private eventRepository: EventRepository,private adminRep:AdminRepository){
+    constructor(private eventRepository: EventRepository,private adminRep:IAdminRepository){
         this.eventRepository = eventRepository
     }
 
@@ -49,5 +51,18 @@ export class AdminUseCase{
 
     async onSerch(searchTerm:string):Promise<IUsers[]>{
         return this.adminRep.onSearch(searchTerm)
+    }
+
+
+    //DashBoard
+    async getDashBoardDetails():Promise<IDashboard>{
+        const dashBoardData = await this.adminRep.getDashboardDetails()
+        return dashBoardData
+    }
+
+    //dashBoardCahrt
+
+    async getDashBoardChart():Promise<MonthlyBooking[]>{
+      return this.adminRep.getDashboardChart()
     }
 }

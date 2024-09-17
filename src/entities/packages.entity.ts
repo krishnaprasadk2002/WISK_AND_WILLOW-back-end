@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 
 export interface IPackages {
     _id?: string;
@@ -8,6 +8,9 @@ export interface IPackages {
     image:string
     startingAt: Number;
     packageItems?: IPackageItem[];
+    averageRating?: number;
+    totalRatings?: number;
+    ratings?: { userId: mongoose.Schema.Types.ObjectId, rating: number }[];
   }
 
   export interface IPackageItem {
@@ -16,3 +19,4 @@ export interface IPackages {
     price: Number,
     status: String, 
   }
+

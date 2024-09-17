@@ -102,7 +102,7 @@ export class UserUseCase {
         status: false
       } as unknown as IUsers;
 
-      await this.userRep.creteGoogleUser(userData.name,userData.email,userData.password,userData.imageUrl as string,true,true);
+      await this.userRep.creteGoogleUser(userData.name, userData.email, userData.password, userData.imageUrl as string, true, true);
       user = await this.userRep.checkUser(payload.email as string);
     }
 
@@ -110,14 +110,14 @@ export class UserUseCase {
       if (!user.isGoogleAuth) {
         user.isGoogleAuth = true;
       }
-    
+
       const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || 'wiskandwillow', { expiresIn: '30d' });
-      await this.userRep.login(user, token); 
+      await this.userRep.login(user, token);
       return token;
-  } else {
+    } else {
       throw new Error("User not found after creation");
+    }
   }
-}
 
   logoutExecute(): void {
   }
@@ -144,7 +144,7 @@ export class UserUseCase {
     const user = await this.userRep.findUserEmail(email);
 
     if (!user) {
-        throw new Error('User not found');
+      throw new Error('User not found');
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'wiskandwillow', { expiresIn: '1h' });
@@ -154,49 +154,53 @@ export class UserUseCase {
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
     const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
+      service: 'Gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const mailOptions = {
-        to: email,
-        from: process.env.EMAIL_USER,
-        subject: 'Password Reset',
-        html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+      to: email,
+      from: process.env.EMAIL_USER,
+      subject: 'Password Reset',
+      html: `<p>You requested a password reset. Click the link below to reset your password:</p>
                <a href="${resetLink}">${resetLink}</a>`,
     };
 
     await transporter.sendMail(mailOptions);
-}
-
-  
-
-
-async resetPassword(token: string, newPassword: string): Promise<void> {
-  try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'wiskandwillow');
-    console.log("decided",decoded);
-
-    if (!decoded || !decoded.userId) {
-      throw new Error('Invalid or expired token');
-    }
-
-    const user = await this.userRep.findById(decoded.userId);
-    console.log('usejhj',user);
-    
-    if (!user || user.resetPasswordToken !== token) {
-      throw new Error('Invalid token');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await this.userRep.updateResetPassword(user._id as unknown as string, hashedPassword);
-    await this.userRep.clearPasswordResetToken(user._id as unknown as string);
-  } catch (error) {
-    throw new Error('Error processing reset password: ' + error);
   }
-}
 
+
+
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'wiskandwillow');
+      console.log("decided", decoded);
+
+      if (!decoded || !decoded.userId) {
+        throw new Error('Invalid or expired token');
+      }
+
+      const user = await this.userRep.findById(decoded.userId);
+      console.log('usejhj', user);
+
+      if (!user || user.resetPasswordToken !== token) {
+        throw new Error('Invalid token');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.userRep.updateResetPassword(user._id as unknown as string, hashedPassword);
+      await this.userRep.clearPasswordResetToken(user._id as unknown as string);
+    } catch (error) {
+      throw new Error('Error processing reset password: ' + error);
+    }
   }
+
+  getUserDetails(userId: string): Promise<IUsers | null> {
+    return this.userRep.userDetails(userId)
+  }
+
+}

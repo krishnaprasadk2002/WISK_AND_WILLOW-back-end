@@ -84,5 +84,10 @@ export class UserRepository implements IUserRepository {
           { resetPasswordToken: null, resetPasswordExpires: null }
         );
       }
+
+      async userDetails(userId:string):Promise<IUsers | null>{
+       const userData = await Users.findById({_id:userId})
+       return userData
+      }
       
 }

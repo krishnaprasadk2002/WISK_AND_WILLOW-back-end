@@ -1,8 +1,8 @@
 import IBanner from "../entities/banner.entity";
-import { BannerRepository } from "../respository/bannerRepository";
+import { IBannerRepository } from "../interfaces/repositories/bannerRepository";
 
 export class BannerUseCase{
-    constructor(private bannerRep:BannerRepository){}
+    constructor(private bannerRep:IBannerRepository){}
 
     async addBanner(bannerData:IBanner):Promise<IBanner>{
         return await this.bannerRep.addBanner(bannerData)

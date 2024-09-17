@@ -4,6 +4,7 @@ import { PackageRepository } from '../../respository/packageRepository'
 import { PackageUseCase } from '../../usecase/packagesUseCase'
 import { PackageController } from '../../controllers/packageController'
 import { adminAuthMiddleware } from '../middlewares/adminAuthentication'
+import { authenticateToken } from '../middlewares/authenticateToken'
 
 const packageRouter = express()
 const packageRepository = new PackageRepository()
@@ -22,5 +23,6 @@ packageRouter.delete('/deletepackage',(req,res)=>packageController.deletePacakge
 packageRouter.get('/getpackagedatabyname',(req,res) => packageController.getPackageDetailsByName(req,res))
 packageRouter.get('/getfoods',(req,res) => packageController.getPackageFood(req,res))
 packageRouter.put('/updatestartingamount',(req,res)=>packageController.updateStartingAmount(req,res))
+packageRouter.post('/:packageId/rate',authenticateToken, (req, res) => packageController.submitPackageRating(req, res));
 
 export default packageRouter

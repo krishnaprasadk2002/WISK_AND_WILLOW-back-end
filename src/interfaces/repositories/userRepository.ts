@@ -15,5 +15,6 @@ export interface IUserRepository{
      savePasswordResetToken(userId: string, token: string): Promise<void>
      updateResetPassword(userId: string, newPassword: string): Promise<void>
      clearPasswordResetToken(userId: string): Promise<void>
+     userDetails(userId:string):Promise<IUsers | null>
 
 }

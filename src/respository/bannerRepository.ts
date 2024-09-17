@@ -1,7 +1,9 @@
 import Banner from "../frameworks/models/banner.model";
 import  IBanner  from "../entities/banner.entity";
+import { IBannerRepository } from "../interfaces/repositories/bannerRepository";
 
-export class BannerRepository{
+
+export class BannerRepository implements IBannerRepository{
     constructor(){}
 
     async addBanner(bannerData:IBanner):Promise<IBanner>{

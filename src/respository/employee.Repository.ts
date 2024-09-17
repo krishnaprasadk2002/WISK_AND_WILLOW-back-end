@@ -1,9 +1,9 @@
 import  Employee  from "../entities/employee.entity";
 import EmployeeModel from "../frameworks/models/employee.model";
-import bcrypt from 'bcrypt';
 import { hashPassword } from "../frameworks/utils/hashedPassword";
+import { IEmployeeRepository } from "../interfaces/repositories/employeeRepository";
 
-export class employeeRepository{
+export class employeeRepository implements IEmployeeRepository{
 
     constructor(){}
 
@@ -39,5 +39,10 @@ export class employeeRepository{
         
         return updateEmployee;
     }    
+
+    async getEmployeeDetails():Promise<Employee[]>{
+        const employeeData = await EmployeeModel.find({is_employee:'Approved'})
+        return employeeData
+    }
 
 }

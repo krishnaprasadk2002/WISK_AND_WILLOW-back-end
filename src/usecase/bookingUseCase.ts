@@ -1,13 +1,13 @@
-import { BookingRepository } from "../respository/bookingRepository";
 import IBooking, { IRazorpayOrder } from "../entities/booking.entity";
 import razorpayInstance from "../frameworks/configs/razorpay";
 import crypto from 'crypto';
+import { IBookingRepository } from "../interfaces/repositories/bookingRepository";
 
 type bookingData = IBooking | IRazorpayOrder
 
 
 export class BookingUseCase {
-    constructor(private bookingRep: BookingRepository) { }
+    constructor(private bookingRep: IBookingRepository) { }
 
     async createBooking(bookingData: IBooking): Promise<bookingData | undefined> {
         try {
@@ -120,6 +120,16 @@ export class BookingUseCase {
         console.error("Error creating booking with Razorpay:", { error, bookingData });
         throw new Error("Failed to userProfile balance amountpaying");
     }
+  }
+
+
+  async employeeAssign(bookingId: string, employeeId: string): Promise<void> {
+    const booking = await this.bookingRep.findById(bookingId);
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    await this.bookingRep.updateBooking(bookingId, { assignedEmployeeId: employeeId });
   }
       
 }

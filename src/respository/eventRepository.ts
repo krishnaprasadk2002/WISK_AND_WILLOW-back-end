@@ -1,11 +1,12 @@
 import IEvent from "../entities/event.entity";
 import Event from "../frameworks/models/event.model";
+import { IEventRepository } from "../interfaces/repositories/eventRepository";
 
-export class EventRepository  {
+export class EventRepository implements IEventRepository  {
 
     constructor(){}
        
-    async findByName(name: string) {
+    async findByName(name: string):Promise<IEvent | null> {
         return Event.findOne({name});
     }
 

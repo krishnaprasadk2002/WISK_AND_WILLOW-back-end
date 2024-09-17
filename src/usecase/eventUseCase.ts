@@ -1,10 +1,10 @@
-import { EventRepository } from "../respository/eventRepository";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import IEvent from "../entities/event.entity";
+import { IEventRepository } from "../interfaces/repositories/eventRepository";
 
 export class EventUseCase {
 
-    constructor(private eventRepository: EventRepository) {
+    constructor(private eventRepository: IEventRepository) {
         this.eventRepository = eventRepository
     }
     async addEvent({ name, description, event_heading, event_content, event_services, event_features, image1, image2, image3 }: IEvent): Promise<IEvent> {

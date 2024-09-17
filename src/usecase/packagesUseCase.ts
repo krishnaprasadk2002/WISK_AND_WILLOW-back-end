@@ -1,9 +1,9 @@
 import { IPackageItem, IPackages } from "../entities/packages.entity";
-import { PackageRepository } from "../respository/packageRepository";
 import IFood from "../entities/food.entity";
+import { IPackageRepository } from "../interfaces/repositories/packageRepository";
 
 export class PackageUseCase{
-    constructor(private packageRep:PackageRepository){}
+    constructor(private packageRep:IPackageRepository){}
 
 async addPackage(name:string,type_of_event:string,startingAt:number,image:string):Promise<IPackages>{
     return this.packageRep.addPackages(name,type_of_event,startingAt,image)
@@ -59,6 +59,13 @@ async addPackageFeature(packageId: string, packageItems: IPackageItem[]): Promis
   async updateStartingAmount(packageId:string,startingAmount:string):Promise<IPackages | null>{
     const updatedPackage = await this.packageRep.updateStartingAmount(packageId, startingAmount)
     return updatedPackage
+  }
+
+  async addRatingInPackage(packageId: string, userId: string, rating: number) {
+    if (rating < 1 || rating > 5) {
+      throw new Error("Rating must be between 1 and 5");
+    }
+    return await this.packageRep.addRating(packageId, userId, rating);
   }
 
 }

@@ -99,4 +99,22 @@ export class AdminController {
         res.status(HttpStatusCode.OK).json({message:"Success"})
     }
 
+    async getDashBoardData(req:Request,res:Response){
+        try {
+            const dashboardData = await this.adminUseCase.getDashBoardDetails()
+            res.status(HttpStatusCode.OK).json(dashboardData)
+        } catch (error) {
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching dashboard Data', error });
+        }
+    }
+
+    async getDashBoardChart(req:Request,res:Response){
+        try {
+            const chartData = await this.adminUseCase.getDashBoardChart()
+            res.status(HttpStatusCode.OK).json(chartData)
+        } catch (error) {
+            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching dashboard chart Data', error });
+        }
+    }
+
 }

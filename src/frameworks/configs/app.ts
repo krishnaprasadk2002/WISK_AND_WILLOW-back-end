@@ -12,9 +12,17 @@ import foodRouter from "../router/foodRouter";
 import galleryRouter from "../router/galleryRouter";
 import bookingRouter from "../router/bookingRouter";
 import bannerRouter from "../router/bannerRouter";
+import chatRouter from "../router/chatRouter";
+
+
+
 
 // Initialize Express application
 const app = express();
+
+
+
+
 
 // Load environment variables from .env
 dotenv.config();
@@ -72,6 +80,9 @@ app.use('/booking',bookingRouter)
 
 //banner routeSet
 app.use('/banner',bannerRouter)
+
+app.use('/chat',chatRouter)
+
 
 
 export default app;

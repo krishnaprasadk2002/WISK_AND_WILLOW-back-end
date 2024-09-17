@@ -1,8 +1,8 @@
 import Employee from "../entities/employee.entity";
-import { employeeRepository } from "../respository/employee.Repository";
+import { IEmployeeRepository } from "../interfaces/repositories/employeeRepository";
 
 export class employeeUseCase{
-constructor(private employeeRep:employeeRepository){}
+constructor(private employeeRep:IEmployeeRepository){}
 
 async register(name:string, email:string,mobile:string,type:string,password:string):Promise<Employee>{
     console.log("use",password);
@@ -32,6 +32,11 @@ async findByEmail(email: string): Promise<Employee | null> {
         throw new Error('Employee not found or could not be updated');
     }
     return updatedEmployee;
+}
+
+async getEmployeeDetails():Promise<Employee[]>{
+  const employeeData = await this.employeeRep.getEmployeeDetails()
+  return employeeData
 }
 
 }

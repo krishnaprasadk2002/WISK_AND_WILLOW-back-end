@@ -29,6 +29,7 @@ export interface ICartItem {
     paymentId?: string; 
     created_at?: Date;
     status:string;
+    assignedEmployeeId:string;
   }
 
   export interface IRazorpayOrder {

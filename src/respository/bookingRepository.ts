@@ -1,8 +1,8 @@
 import BookingModel from "../frameworks/models/booking.model";
 import IBooking from "../entities/booking.entity";
-import { log } from "console";
+import { IBookingRepository } from "../interfaces/repositories/bookingRepository";
 
-export class BookingRepository {
+export class BookingRepository implements IBookingRepository {
     constructor() { }
 
     async createBooking(bookingData: IBooking): Promise<IBooking> {
@@ -55,8 +55,8 @@ export class BookingRepository {
 
       //taking data in userProfile
 
-      async findByEmail(email: string): Promise<IBooking[]> {
-        return await BookingModel.find({ email })
+      async findByEmail(email: string, status: string = 'successful'): Promise<IBooking[]> {
+        return await BookingModel.find({ email, status });
       }
 
       async updateBookingPaymentDetails(id: string, updateData: { paymentOption: string, balanceAmount: number }): Promise<void> {
@@ -74,6 +74,14 @@ export class BookingRepository {
           console.error("Error updating booking payment details:", error);
           throw new Error("Failed to update booking payment details");
         }
+    }
+
+    async findById(bookingId: string): Promise<IBooking | null> {
+      return await BookingModel.findById(bookingId)
+    }
+  
+    async updateBooking(bookingId: string, updateData: Partial<IBooking>): Promise<IBooking | null> {
+      return await BookingModel.findByIdAndUpdate(bookingId, updateData, { new: true })
     }
 }
 

@@ -3,6 +3,8 @@ import { PackageUseCase } from "../usecase/packagesUseCase";
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import { IPackages } from "../entities/packages.entity";
 import { HttpStatusCode } from "../enums/httpStatusCodes";
+import mongoose from "mongoose";
+import { authenticatedRequest } from "../frameworks/middlewares/authenticateToken";
 
 export class PackageController {
     constructor(private packageUseCase: PackageUseCase) { }
@@ -190,4 +192,37 @@ export class PackageController {
             res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json( error);
         }
     }
+
+    async submitPackageRating(req: authenticatedRequest, res: Response) {
+        try {
+          const { rating } = req.query;
+          const { packageId } = req.params;
+          const userId = req.user?.userId as string;
+
+          console.log('rating',rating);
+          console.log('packageId',packageId);
+          console.log('user',userId);
+          
+      
+          if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+          }
+      
+          if (!rating) {
+            return res.status(400).json({ message: 'Rating is required' });
+          }
+      
+          const updatedPackage = await this.packageUseCase.addRatingInPackage(packageId, userId, Number(rating));
+      
+          if (!updatedPackage) {
+            return res.status(404).json({ message: 'Package not found' });
+          }
+      
+          return res.status(200).json({ message: 'Rating submitted successfully', package: updatedPackage });
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: 'Internal Server Error' });
+        }
+      }
+      
 }

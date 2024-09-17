@@ -92,6 +92,15 @@ export class EmployeeController {
     }
   }
 
+  async getEmployeeDetails(req:Request,res:Response){
+    try {
+      const employeeDetails = await this.employeeUseCase.getEmployeeDetails()
+      res.status(200).json(employeeDetails)
+    } catch (error) {
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error updating employee status', error });
+    }
+  }
+
 
 
 }

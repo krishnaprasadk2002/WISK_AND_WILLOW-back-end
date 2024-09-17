@@ -17,5 +17,6 @@ bookingRouter.get('/getbooking',(req,res)=>bookingController.getBooking(req,res)
 bookingRouter.get('/getbookinginprofile',(req,res)=>bookingController.getBookingsByEmail(req,res))
 bookingRouter.post('/creatingorder',(req,res) => bookingController.userProfileBalancePayment(req,res))
 bookingRouter.post('/verifybalancepayment',(req,res)=>bookingController.verifyBalancePayment(req,res))
+bookingRouter.post('/:bookingId/assign-employee',(req,res)=>bookingController.assignEmployee(req,res))
 
 export default bookingRouter

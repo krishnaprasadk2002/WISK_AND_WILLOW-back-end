@@ -1,9 +1,9 @@
-import { FoodRepository } from "../respository/food.Repository";
 import { IFood } from "../entities/food.entity";
+import { IFoodRepository } from "../interfaces/repositories/foodRepository";
 
 export class FoodUseCase{
 
-    constructor(private foodRep:FoodRepository){}
+    constructor(private foodRep:IFoodRepository){}
 
    async addFood(foodData:IFood):Promise<IFood>{
     return await this.foodRep.addFood(foodData)

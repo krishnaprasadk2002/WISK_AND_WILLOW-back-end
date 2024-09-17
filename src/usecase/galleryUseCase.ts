@@ -1,9 +1,10 @@
 import { IGallery, IGalleryCategory } from "../entities/gallery.entity";
-import { GalleryRepository } from "../respository/gallery.Repository";
+import { IGalleryRepository } from "../interfaces/repositories/galleryRepositoy";
+
 
 export class GalleryUseCase{
 
-    constructor(private galleryRep:GalleryRepository){}
+    constructor(private galleryRep:IGalleryRepository){}
 
     async addImage(imageData:IGallery):Promise<IGallery>{
         return this.galleryRep.addImageGallery(imageData)

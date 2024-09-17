@@ -32,7 +32,8 @@ const BookingSchema: Schema = new Schema({
   paymentOrderId: { type: String }, 
   paymentId: { type: String },  
   created_at: { type: Date, default: Date.now },
-  status:{type:String, default:"pending",enum:["pending","failed","successful"]}
+  status:{type:String, default:"pending",enum:["pending","failed","successful"]},
+  assignedEmployeeId: { type: Schema.Types.ObjectId, ref: 'Employee' }
 });
 
 const BookingModel = mongoose.model<IBooking>('Booking', BookingSchema);

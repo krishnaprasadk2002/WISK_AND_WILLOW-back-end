@@ -1,7 +1,8 @@
 import Food from "../frameworks/models/food.Model";
 import { IFood } from "../entities/food.entity";
+import { IFoodRepository } from "../interfaces/repositories/foodRepository";
 
-export class FoodRepository{
+export class FoodRepository implements IFoodRepository{
     constructor(){}
 
     async addFood(foodData:IFood):Promise<IFood>{
