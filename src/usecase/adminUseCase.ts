@@ -5,6 +5,14 @@ import IUsers from "../entities/user.entity"
 import IEvent from "../entities/event.entity"
 import { IAdminRepository } from "../interfaces/repositories/adminRepository"
 import { IDashboard, MonthlyBooking } from "../entities/dashboard.entity"
+import IBooking from "../entities/booking.entity"
+import * as exceljs from 'exceljs';
+
+interface GetBookingsRequest {
+    startDate: string;
+    endDate: string;
+    statusFilter: string;
+  }
 
 export class AdminUseCase{
     constructor(private eventRepository: EventRepository,private adminRep:IAdminRepository){
@@ -65,4 +73,44 @@ export class AdminUseCase{
     async getDashBoardChart():Promise<MonthlyBooking[]>{
       return this.adminRep.getDashboardChart()
     }
-}
+
+    async getBookingData(data: GetBookingsRequest): Promise<{ bookings: IBooking[] }> {
+        const { startDate, endDate} = data;
+        return await this.adminRep.getBookingsData(startDate, endDate);
+      }
+    
+
+      async exportBookingsData(startDate: string, endDate: string): Promise<Buffer> {
+        // Fetch bookings data
+        const result = await this.adminRep.getBookingsData(startDate, endDate);
+        const bookings: IBooking[] = result.bookings;
+    
+        // Create Excel file
+        const workbook = new exceljs.Workbook();
+        const worksheet = workbook.addWorksheet('Bookings');
+    
+        worksheet.columns = [
+          { header: 'Customer Name', key: 'customerName', width: 25 },
+          { header: 'Event Type', key: 'eventType', width: 20 },
+          { header: 'Amount', key: 'amount', width: 15 }
+        ];
+    
+        bookings.forEach((booking: IBooking) => {
+          worksheet.addRow({
+            customerName: booking.name,
+            eventType: booking.type_of_event,
+            amount: booking.totalAmount
+          });
+        });
+    
+        // Use writeBuffer to generate the Excel file buffer (Uint8Array)
+        const uint8ArrayBuffer = await workbook.xlsx.writeBuffer();
+    
+        // Convert Uint8Array to Buffer
+        const buffer = Buffer.from(uint8ArrayBuffer);
+    
+        // Return as Buffer
+        return buffer;
+      }
+    }
+      

@@ -7,6 +7,8 @@ import Users from '../frameworks/models/user.model';
 import { IAdminRepository } from '../interfaces/repositories/adminRepository';
 import { IDashboard, MonthlyBooking } from '../entities/dashboard.entity';
 import BookingModel from '../frameworks/models/booking.model';
+import IBooking from '../entities/booking.entity';
+import moment from 'moment';
 dotenv.config()
 
 export class AdminRepository implements IAdminRepository {
@@ -130,6 +132,26 @@ export class AdminRepository implements IAdminRepository {
       
         return monthlyBookings;
       }
+
+      async getBookingsData(startDate: string, endDate: string): Promise<{ bookings: IBooking[] }> {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+      
+        console.log('Parsed Start Date:', start);
+        console.log('Parsed End Date:', end);
+      
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          throw new Error('Invalid date format');
+        }
+      
+        const bookings = await BookingModel.find({
+          created_at: { $gte: start, $lte: end },
+        });
+      
+        return { bookings };
+      }
+      
+      
 
 }
 

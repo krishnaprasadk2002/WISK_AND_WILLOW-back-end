@@ -117,4 +117,48 @@ export class AdminController {
         }
     }
 
+    async getBookings(req: Request, res: Response): Promise<void> {
+        try {
+          const { startDate, endDate} = req.query;
+      
+          if (!startDate || !endDate ) {
+            res.status(400).json({ error: 'Missing query parameters' });
+            return;
+          }
+      
+          const { bookings } = await this.adminUseCase.getBookingData({
+              startDate: startDate as string,
+              endDate: endDate as string,
+              statusFilter: ''
+          });
+          res.json({ bookings });
+        } catch (error) {
+          console.error('Error in getBookings controller:', error);
+         
+        }
+      
+    }
+
+    async exportBookings(req: Request, res: Response): Promise<void> {
+        try {
+          const { startDate, endDate } = req.query as { startDate: string; endDate: string };
+    
+          if (!startDate || !endDate) {
+            res.status(400).send('Start date and end date are required');
+            return;
+          }
+    
+          const fileBuffer = await this.adminUseCase.exportBookingsData(startDate, endDate);
+          
+          res.setHeader('Content-Disposition', 'attachment; filename="booking_reports.xlsx"');
+          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    
+          // Convert the Uint8Array to a Buffer before sending it
+          const buffer = Buffer.from(fileBuffer);
+          res.send(buffer);
+        } catch (error) {
+          console.error('Error exporting bookings:', error);
+          res.status(500).send('Internal Server Error');
+        }
+      }
 }

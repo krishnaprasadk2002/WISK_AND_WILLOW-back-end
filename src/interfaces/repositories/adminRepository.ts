@@ -1,3 +1,4 @@
+import IBooking from "../../entities/booking.entity"
 import { IDashboard, MonthlyBooking } from "../../entities/dashboard.entity"
 import IEvent from "../../entities/event.entity"
 import IUsers from "../../entities/user.entity"
@@ -15,4 +16,5 @@ export interface IAdminRepository{
     onSearch(searchTerm:string):Promise<IUsers[]>
     getDashboardDetails(): Promise<IDashboard>
     getDashboardChart(): Promise<MonthlyBooking[]> 
+    getBookingsData(startDate: string, endDate: string):Promise<{bookings:IBooking[]}>
 }

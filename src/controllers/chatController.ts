@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { IChatMessage, IConversation } from "../entities/chat.entity";
 import { authenticatedRequest } from "../frameworks/middlewares/authenticateToken";
 import { ChatUseCase } from "../usecase/chatUseCase";
 import { HttpStatusCode } from "../enums/httpStatusCodes";
@@ -38,15 +37,21 @@ export class ChatController {
 
   async getConversationId(req: authenticatedRequest, res: Response) {
     const userId = req.user?.userId as string;
-    console.log(userId,'gettitngnd');
-
+    console.log(userId, 'fetching conversation');
+ 
     try {
-      const conversationId = await this.chatUseCase.getConversationId(userId);
-      return res.status(HttpStatusCode.OK).json(conversationId );
+       const conversationId = await this.chatUseCase.getConversationId(userId);
+       if (!conversationId) {
+          console.log('Conversation not found for user:', userId);
+          return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Conversation not found' });
+       }
+       return res.status(HttpStatusCode.OK).json(conversationId);
     } catch (error) {
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching conversation', error });
+       console.error('Error fetching conversation:', error);
+       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching conversation', error });
     }
-  }
+ }
+ 
 
   async getConversationData(req:Request,res:Response){
     try {

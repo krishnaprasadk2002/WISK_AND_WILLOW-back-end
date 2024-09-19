@@ -21,5 +21,8 @@ adminRouter.get('/search',adminAuthMiddleware,(req,res)=>adminController.onSearc
 adminRouter.get('/isAuth',adminAuthMiddleware,(req,res)=>adminController.isAuth(req,res))
 adminRouter.get('/getdashboard',adminAuthMiddleware,(req,res)=>adminController.getDashBoardData(req,res))
 adminRouter.get('/monthly-bookings',adminAuthMiddleware,(req,res)=>adminController.getDashBoardChart(req,res))
+adminRouter.get('/bookings', (req, res) => adminController.getBookings(req, res));
+adminRouter.get('/export-bookings', (req, res) => adminController.exportBookings(req, res));
+
 
 export default adminRouter
