@@ -14,7 +14,7 @@ const server = createServer(app);
 //Instance of socket.io
 export const io = new Server(server,{
   cors:{
-    origin:'http://localhost:4200',
+    origin: process.env.FRONTEND_URL || 'http://localhost:4200',
     methods:["GET",'POST'],
     credentials: true
   }
@@ -45,11 +45,11 @@ io.on("connection", (client) => {
   });
 
  client.on('admin-message',(message)=>{
-  console.log(`Message from ${message.user}: ${message.message}hbbhk`);
+  console.log(`Message from ${message.user}: ${message.message}`);
   chatController.handleAdminNewMessage(io,message.conversationId,message.message)
  })
  client.on('join-conversation',(conversationId)=>{
-  console.log(`Joinedd ${conversationId.conversationId}fefnf`);
+  console.log(`Joinedd ${conversationId.conversationId}`);
   const cid = conversationId.conversationId
   client.join(cid)
  })

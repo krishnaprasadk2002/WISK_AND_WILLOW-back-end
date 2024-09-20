@@ -29,7 +29,7 @@ dotenv.config();
 
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL! // Allow requests from Angular application on localhost
+  process.env.FRONTEND_URL || 'http://localhost:4200' // Allow requests from Angular application on localhost
 ];
 
 // Apply CORS configuration immediately after initializing the app
