@@ -205,23 +205,23 @@ export class PackageController {
           
       
           if (!userId) {
-            return res.status(400).json({ message: 'User ID is required' });
+            return res.status(HttpStatusCode.FORBIDDEN).json({ message: 'User ID is required' });
           }
       
           if (!rating) {
-            return res.status(400).json({ message: 'Rating is required' });
+            return res.status(HttpStatusCode.FORBIDDEN).json({ message: 'Rating is required' });
           }
       
           const updatedPackage = await this.packageUseCase.addRatingInPackage(packageId, userId, Number(rating));
       
           if (!updatedPackage) {
-            return res.status(404).json({ message: 'Package not found' });
+            return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Package not found' });
           }
       
-          return res.status(200).json({ message: 'Rating submitted successfully', package: updatedPackage });
+          return res.status(HttpStatusCode.OK).json({ message: 'Rating submitted successfully', package: updatedPackage });
         } catch (error) {
           console.error(error);
-          return res.status(500).json({ message: 'Internal Server Error' });
+          return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
         }
       }
       

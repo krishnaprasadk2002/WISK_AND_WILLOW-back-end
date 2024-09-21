@@ -101,4 +101,14 @@ export class EventController {
         }
       }
 
+     async getBanners(req:Request,res:Response){
+        try {
+            const bannerData = await this.eventUseCase.getBanners()
+            res.status(HttpStatusCode.OK).json(bannerData)
+        } catch (error) {
+            console.error('Error Fetching Banner data:', error);
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error Fetching Banner data' });
+        }
+      }
+
 }

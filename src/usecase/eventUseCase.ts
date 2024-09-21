@@ -1,6 +1,7 @@
 import uploadCloudinary from "../frameworks/configs/cloudinary";
 import IEvent from "../entities/event.entity";
 import { IEventRepository } from "../interfaces/repositories/eventRepository";
+import IBanner from "../entities/banner.entity";
 
 export class EventUseCase {
 
@@ -58,6 +59,10 @@ export class EventUseCase {
 
     async onSerch(searchTerm:string):Promise<IEvent[]>{
         return this.eventRepository.onSearch(searchTerm)
+    }
+
+    async getBanners():Promise<IBanner[]>{
+        return this.eventRepository.getBanners()
     }
 
 }

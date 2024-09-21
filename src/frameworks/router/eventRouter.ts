@@ -16,5 +16,6 @@ eventRouter.post('/eventstatus', (req, res) => eventController.eventStatus(req, 
 eventRouter.put('/editevent', (req,res) => eventController.updateEventData(req,res))
 eventRouter.get('/getEventByName/:name',(req,res)=>eventController.getEventByName(req,res))
 eventRouter.get('/search',adminAuthMiddleware,(req,res)=>eventController.onSearch(req,res))
+eventRouter.get('/getbanners',(req,res)=>eventController.getBanners(req,res))
 
 export default eventRouter
