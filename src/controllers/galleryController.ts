@@ -166,9 +166,7 @@ export class GalleryController {
       const galleryImage = await this.galleryUseCase.getGalleryImages(name);
       res.status(HttpStatusCode.OK).json(galleryImage);
     } catch (error) {
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: "Gallery Image data fetching errors", error });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Gallery Image data fetching errors", error });
     }
   }
 }

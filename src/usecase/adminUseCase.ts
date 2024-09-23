@@ -91,15 +91,23 @@ export class AdminUseCase{
     
         worksheet.columns = [
           { header: 'Customer Name', key: 'customerName', width: 25 },
+          { header: 'Customer Email', key: 'customerEmail', width: 25 },
+          { header: 'Customer Mobile', key: 'customerMobile', width: 25 },
           { header: 'Event Type', key: 'eventType', width: 20 },
-          { header: 'Amount', key: 'amount', width: 15 }
+          { header: 'Payment option', key: 'paymentOption', width: 15 },
+          { header: 'Amount', key: 'amount', width: 15 },
+          { header: 'Balance Amount', key: 'balanceAmount', width: 15 },
         ];
     
         bookings.forEach((booking: IBooking) => {
           worksheet.addRow({
             customerName: booking.name,
             eventType: booking.type_of_event,
-            amount: booking.totalAmount
+            amount: booking.totalAmount,
+            customerEmail:booking.email,
+            paymentOption:booking.payment_option,
+            customerMobile:booking.mobile,
+            balanceAmount:booking.balanceAmount
           });
         });
     

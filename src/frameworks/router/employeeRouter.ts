@@ -18,5 +18,6 @@ employeeRouter.post('/logout',(req,res)=>employeeController.employeeLogout(req,r
 employeeRouter.get('/getemployees',adminAuthMiddleware,(req,res)=>employeeController.getEmployeeData(req,res))
 employeeRouter.put('/empstatus/:id',(req,res)=>employeeController.updateEmployeeStatus(req,res))
 employeeRouter.get('/getemployee',(req,res)=>employeeController.getEmployeeDetails(req,res))
+employeeRouter.get('/serach',(req,res)=>employeeController.serachEmployees(req,res))
 
 export default employeeRouter

@@ -19,8 +19,11 @@ async findByEmail(email: string): Promise<Employee | null> {
     return await this.employeeRep.findByEmail(email);
   }
 
-  async getEmployeeData():Promise<Employee[]>{
-    return this.employeeRep.getEmployees()
+  async getEmployeeData(page: number, itemsPerPage: number):Promise<{Employee:Employee[],totalItems:number}>{
+    const Employee = await this.employeeRep.getEmployees(page,itemsPerPage)
+    const totalItems = await this.employeeRep.getEmployeesCount()
+    return {Employee,totalItems}
+    
   }
   
 
@@ -39,4 +42,5 @@ async getEmployeeDetails():Promise<Employee[]>{
   return employeeData
 }
 
+async
 }

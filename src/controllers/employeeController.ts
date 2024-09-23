@@ -70,8 +70,10 @@ export class EmployeeController {
 
   async getEmployeeData(req: Request, res: Response) {
     try {
-      const employes = await this.employeeUseCase.getEmployeeData()
-      res.json(employes)
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const itemsPerPage = parseInt(req.query.itemsPerPage as string, 10) || 10;
+      const employes = await this.employeeUseCase.getEmployeeData(page, itemsPerPage)
+      res.status(HttpStatusCode.OK).json(employes)
     } catch (error) {
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Fetching employee data failed" });
     }
@@ -92,7 +94,7 @@ export class EmployeeController {
     }
   }
 
-  async getEmployeeDetails(req:Request,res:Response){
+  async getEmployeeDetails(req: Request, res: Response) {
     try {
       const employeeDetails = await this.employeeUseCase.getEmployeeDetails()
       res.status(200).json(employeeDetails)
@@ -101,6 +103,16 @@ export class EmployeeController {
     }
   }
 
+  async serachEmployees(req:Request,res:Response){
+    try {
+      const serachTerm = req.query.serachTerm
+      console.log(serachTerm)
+      
+      
+    } catch (error) {
+      
+    }
+  }
 
 
 }

@@ -21,8 +21,13 @@ export class employeeRepository implements IEmployeeRepository{
         return await EmployeeModel.findOne({ email })
     }
 
-    async getEmployees():Promise<Employee[]>{
-        return await EmployeeModel.find()
+    async getEmployees(page: number, itemsPerPage: number):Promise<Employee[]>{
+        const skip = (page - 1) * itemsPerPage;
+        return await EmployeeModel.find().skip(skip).limit(itemsPerPage) as Employee[]
+    }
+
+    async getEmployeesCount():Promise<number>{
+        return EmployeeModel.countDocuments()
     }
 
     async updateEmployeeStatus(id: string, status: 'Approved' | 'Rejected'): Promise<Employee | null> {
@@ -43,6 +48,16 @@ export class employeeRepository implements IEmployeeRepository{
     async getEmployeeDetails():Promise<Employee[]>{
         const employeeData = await EmployeeModel.find({is_employee:'Approved'})
         return employeeData
+    }
+
+    async searchEmployees(searchTerm: string): Promise<Employee[]> {
+        return EmployeeModel.find({
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } }, 
+                { email: { $regex: searchTerm, $options: 'i' } },
+                { mobile: { $regex: searchTerm, $options: 'i' } }
+            ]
+        });
     }
 
 }
