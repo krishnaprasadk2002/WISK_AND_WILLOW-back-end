@@ -42,5 +42,4 @@ async getEmployeeDetails():Promise<Employee[]>{
   return employeeData
 }
 
-async
 }
