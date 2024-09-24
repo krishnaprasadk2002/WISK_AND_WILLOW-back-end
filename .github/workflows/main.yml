@@ -26,5 +26,21 @@ jobs:
         with: 
           push: true
           tags: krishnaprasad045/wiskandwillow-backend:latest
+  depoly:
+    needs: EventManagement
+    runs-on: ubuntu-latest
+    steps: 
+      - name: set up SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: SSH into EC2 and Deploy Docker Container
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} \
+            "sudo docker stop wiskandwillow || true && \
+             sudo docker rm wiskandwillow || true && \
+             sudo docker rmi krishnaprasad045/wiskandwillow-backend:latest || true && \
+             sudo docker pull krishnaprasad045/wiskandwillow-backend:latest && \
+             sudo docker run -d --name wiskandwillow -p 3000:3000 --env-file .env krishnaprasad045/wiskandwillow-backend:latest"
  
