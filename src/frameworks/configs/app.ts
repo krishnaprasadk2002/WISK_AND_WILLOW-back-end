@@ -21,16 +21,12 @@ import morgan from 'morgan'
 // Initialize Express application
 const app = express();
 
-
-
-
-
 // Load environment variables from .env
 dotenv.config();
 
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:4200' // Allow requests from Angular application on localhost
+  process.env.FRONTEND_URL || 'http://localhost:4200' 
 ];
 
 // Apply CORS configuration immediately after initializing the app

@@ -50,7 +50,7 @@ export class AdminRepository implements IAdminRepository {
             .skip(skip)
             .limit(itemsPerPage) as IEvent[]
     }
-
+ 
     async getEventCount(): Promise<number> {
         return await Event.countDocuments()
     }
