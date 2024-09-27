@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from 'cookie-parser'
+import refreshTokenRoute from "../router/refershTokenRouter";
 import userRoute from "../router/userRouter";
 import adminRouter from "../router/adminRouter";
 import eventRouter from "../router/eventRouter";
@@ -13,7 +14,7 @@ import galleryRouter from "../router/galleryRouter";
 import bookingRouter from "../router/bookingRouter";
 import bannerRouter from "../router/bannerRouter";
 import chatRouter from "../router/chatRouter";
-
+import morgan from 'morgan'
 
 
 
@@ -53,6 +54,10 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true }
 }));
 
+app.use(morgan("dev"));
+
+// Refresh Token route setting
+app.use('/refresh-token', refreshTokenRoute)
 
 // User route setting
 app.use('/user', userRoute);

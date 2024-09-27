@@ -1,4 +1,6 @@
+import IBooking from "../entities/booking.entity";
 import  Employee  from "../entities/employee.entity";
+import BookingModel from "../frameworks/models/booking.model";
 import EmployeeModel from "../frameworks/models/employee.model";
 import { hashPassword } from "../frameworks/utils/hashedPassword";
 import { IEmployeeRepository } from "../interfaces/repositories/employeeRepository";
@@ -52,12 +54,22 @@ export class employeeRepository implements IEmployeeRepository{
 
     async searchEmployees(searchTerm: string): Promise<Employee[]> {
         return EmployeeModel.find({
-            $or: [
-                { name: { $regex: searchTerm, $options: 'i' } }, 
-                { email: { $regex: searchTerm, $options: 'i' } },
-                { mobile: { $regex: searchTerm, $options: 'i' } }
-            ]
+          $or: [
+            { name: { $regex: searchTerm, $options: 'i' } }, 
+            { email: { $regex: searchTerm, $options: 'i' } },
+            { mobile: { $regex: searchTerm, $options: 'i' } },
+          ]
         });
-    }
+      }
+
+      async getEmployeeDataById(empId:string):Promise<Employee[] | null>{
+        return EmployeeModel.findById(empId)
+      }
+      
+      async getEmployeeBookings(empId: string): Promise<IBooking[] | null> {
+        const employeeBookingData = await BookingModel.find({ assignedEmployeeId: empId });
+        return employeeBookingData.length ? employeeBookingData : [];
+      }
+      
 
 }

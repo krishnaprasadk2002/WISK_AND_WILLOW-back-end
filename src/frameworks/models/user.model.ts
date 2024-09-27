@@ -10,7 +10,9 @@ const UsersSchema: Schema = new Schema({
     imageUrl:{type: String},
     status:{type:Boolean,defalut:false},
     isGoogleAuth:{type:Boolean,default:false},
-    resetPasswordToken:{type:String,default:null}
+    resetPasswordToken:{type:String,default:null},
+    refreshToken:{ type:String},
+    expiresAt: {type:Date}
   });
   
   const Users = mongoose.model<IUsers>('Users', UsersSchema);

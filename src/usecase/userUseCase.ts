@@ -62,6 +62,36 @@ export class UserUseCase {
     }
   }
 
+  async validateRefreshToken(refreshToken: string): Promise<IUsers | false> {
+    const user = await this.userRep.findOne(refreshToken);
+    
+    if (!user || (user.expiresAt && user.expiresAt.getTime() < Date.now())) {
+        return false; 
+    }
+
+    return user;
+}
+
+
+  async checkUserToken(userId: string): Promise<void> {
+    const user = await this.userRep.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // Use the user's refresh token to validate
+    const expired = !(await this.validateRefreshToken(user.refreshToken!));
+    if (expired) {
+        console.log('Token has expired');
+    } else {
+        console.log('Token is still valid');
+    }
+}
+
+async saveRefershToken(userId:string,newToken:string):Promise<void>{
+  return this.saveRefershToken(userId,newToken)
+}
+
   sendOtpEmail(email: string, otp: string) {
     let transporter = nodemailer.createTransport({
       service: "gmail",
@@ -202,5 +232,11 @@ export class UserUseCase {
   getUserDetails(userId: string): Promise<IUsers | null> {
     return this.userRep.userDetails(userId)
   }
+
+  async generateRefreshToken(userId: string): Promise<string> {
+    const refreshToken = jwt.sign({ userId }, process.env.JWT_SECRET || 'wiskandwillow', { expiresIn: '30d' });
+    await this.userRep.saveRefreshToken(userId, refreshToken);
+    return refreshToken;
+}
 
 }

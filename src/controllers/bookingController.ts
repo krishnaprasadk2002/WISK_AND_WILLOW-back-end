@@ -76,14 +76,16 @@ export class BookingController {
   async getBooking(req: Request, res: Response) {
     try {
       const page = parseInt(req.query.page as string) || 1;
-      const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 4;
-
+      const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 4; 
+  
       const result = await this.bookingUseCase.getBookings(page, itemsPerPage);
+      
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ error: 'Error fetching bookings' });
     }
   }
+  
 
   async getBookingsByEmail(req: Request, res: Response): Promise<Response> {
     try {
@@ -150,7 +152,7 @@ export class BookingController {
       }
 
       await this.bookingUseCase.employeeAssign(bookingId, employeeId);
-      res.status(HttpStatusCode.OK).json({ message: 'Employee assigned successfully' });
+      res.status(HttpStatusCode.OK).json({ message: 'Employee assigned successfully',empId:employeeId });
     } catch (error) {
       console.error('Error assigning employee to booking:', error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error assigning employee', error});

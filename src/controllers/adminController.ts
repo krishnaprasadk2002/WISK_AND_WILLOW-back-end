@@ -14,8 +14,6 @@ export class AdminController {
 
         const adminToken: string | null = await this.adminUseCase.execute(email, password);
 
-        console.log(adminToken);
-
 
         if (adminToken) {
             res.cookie('adminToken', adminToken, {
@@ -39,7 +37,6 @@ export class AdminController {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         })
-        console.log('admin logged out');
         res.status(HttpStatusCode.OK).json({ message: 'Logout successful' });
     }
 
@@ -108,21 +105,41 @@ export class AdminController {
         }
     }
 
-    async getDashBoardChart(req:Request,res:Response){
+
+    async getDailyBookings(req: Request, res: Response) {
         try {
-            const chartData = await this.adminUseCase.getDashBoardChart()
-            res.status(HttpStatusCode.OK).json(chartData)
+          const dailyBookings = await this.adminUseCase.getDailyBookings();
+          
+          res.status(HttpStatusCode.OK).json(dailyBookings);
         } catch (error) {
-            res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching dashboard chart Data', error });
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching daily bookings', error });
         }
-    }
+      }
+    
+      async getMonthlyBookings(req: Request, res: Response) {
+        try {
+          const monthlyBookings = await this.adminUseCase.getMonthlyBookings();
+          res.status(HttpStatusCode.OK).json(monthlyBookings);
+        } catch (error) {
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching monthly bookings', error });
+        }
+      }
+    
+      async getYearlyBookings(req: Request, res: Response) {
+        try {
+          const yearlyBookings = await this.adminUseCase.getYearlyBookings();
+          res.status(HttpStatusCode.OK).json(yearlyBookings);
+        } catch (error) {
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching yearly bookings', error });
+        }
+      }
 
     async getBookings(req: Request, res: Response): Promise<void> {
         try {
           const { startDate, endDate} = req.query;
       
           if (!startDate || !endDate ) {
-            res.status(400).json({ error: 'Missing query parameters' });
+            res.status(HttpStatusCode.FORBIDDEN).json({ error: 'Missing query parameters' });
             return;
           }
       
@@ -142,23 +159,17 @@ export class AdminController {
     async exportBookings(req: Request, res: Response): Promise<void> {
         try {
           const { startDate, endDate } = req.query as { startDate: string; endDate: string };
-    
           if (!startDate || !endDate) {
             res.status(400).send('Start date and end date are required');
             return;
           }
-    
           const fileBuffer = await this.adminUseCase.exportBookingsData(startDate, endDate);
-          
-          res.setHeader('Content-Disposition', 'attachment; filename="booking_reports.xlsx"');
-          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    
           // Convert the Uint8Array to a Buffer before sending it
           const buffer = Buffer.from(fileBuffer);
           res.send(buffer);
         } catch (error) {
           console.error('Error exporting bookings:', error);
-          res.status(500).send('Internal Server Error');
+          res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send('Internal Server Error');
         }
       }
 }

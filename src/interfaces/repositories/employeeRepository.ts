@@ -1,3 +1,4 @@
+import IBooking from "../../entities/booking.entity";
 import Employee from "../../entities/employee.entity";
 
 export interface IEmployeeRepository{
@@ -9,5 +10,7 @@ export interface IEmployeeRepository{
     getEmployeeDetails():Promise<Employee[]>
    getEmployeesCount():Promise<number>
    searchEmployees(searchTerm: string): Promise<Employee[]>
+   getEmployeeDataById(empId:string):Promise<Employee[] | null>
+   getEmployeeBookings(empId:string):Promise<IBooking[]|null>
         
 }

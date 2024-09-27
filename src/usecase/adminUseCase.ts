@@ -4,7 +4,7 @@ import  {EventRepository}  from "../respository/eventRepository"
 import IUsers from "../entities/user.entity"
 import IEvent from "../entities/event.entity"
 import { IAdminRepository } from "../interfaces/repositories/adminRepository"
-import { IDashboard, MonthlyBooking } from "../entities/dashboard.entity"
+import { DailyBooking, IDashboard, MonthlyBooking, YearlyBooking } from "../entities/dashboard.entity"
 import IBooking from "../entities/booking.entity"
 import * as exceljs from 'exceljs';
 
@@ -70,9 +70,23 @@ export class AdminUseCase{
 
     //dashBoardCahrt
 
-    async getDashBoardChart():Promise<MonthlyBooking[]>{
-      return this.adminRep.getDashboardChart()
+    // async getDashBoardChart():Promise<MonthlyBooking[]>{
+    //   return this.adminRep.getDashboardChart()
+    // }
+
+    async getMonthlyBookings(): Promise<MonthlyBooking[]> {
+      return this.adminRep.getMonthlyBookings();
     }
+  
+    async getDailyBookings(): Promise<DailyBooking[]> {
+      return this.adminRep.getDailyBookings();
+    }
+  
+    async getYearlyBookings(): Promise<YearlyBooking[]> {
+      return this.adminRep.getYearlyBookings();
+    }
+
+
 
     async getBookingData(data: GetBookingsRequest): Promise<{ bookings: IBooking[] }> {
         const { startDate, endDate} = data;

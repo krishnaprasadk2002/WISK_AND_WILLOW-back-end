@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { employeeUseCase } from "../usecase/employee.useCase";
 import { HttpStatusCode } from "../enums/httpStatusCodes";
+import { authenticatedEmployeeRequest } from "../frameworks/middlewares/employeeAuthentication";
 
 export class EmployeeController {
   constructor(private employeeUseCase: employeeUseCase) { }
@@ -51,6 +52,7 @@ export class EmployeeController {
         maxAge: 3600000,
         sameSite: 'strict',
       })
+      
       res.status(HttpStatusCode.OK).json({ message: 'Login successful', employee });
     } catch (error) {
       console.error(error);
@@ -103,16 +105,48 @@ export class EmployeeController {
     }
   }
 
-  async serachEmployees(req:Request,res:Response){
+  async searchEmployees(req: Request, res: Response) {
     try {
-      const serachTerm = req.query.serachTerm
-      console.log(serachTerm)
-      
-      
+      const searchTerm = req.query.searchTerm as string;
+      console.log(searchTerm);
+  
+      const searchEmployeesData = await this.employeeUseCase.searchEmployee(searchTerm);
+      res.status(HttpStatusCode.OK).json(searchEmployeesData);
     } catch (error) {
-      
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error Fetching data in Employees', error });
     }
   }
 
+  async getEmployeeDataById(req: authenticatedEmployeeRequest, res: Response) {
+    try {
+      const empId = req.employee?.empId as string
+       const employeeData = await this.employeeUseCase.getEmployeeDataById(empId)
+       
+       res.status(HttpStatusCode.OK).json(employeeData)
+    } catch (error) {
+        console.log('Error fetching employee data:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+async getEmployeeBookings(req: authenticatedEmployeeRequest, res: Response) {
+  try {
+    const empId = req.employee?.empId as string;
+    if (!empId) {
+      return res.status(400).json({ message: 'Employee ID is missing' });
+    }
+
+    const employeeBookingData = await this.employeeUseCase.getEmployeeBookings(empId);
+    console.log('Employee booking data:', employeeBookingData);
+    res.status(HttpStatusCode.OK).json(employeeBookingData);
+  } catch (error) {
+    console.log('Error fetching employee assigned events data:', error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
+  }
+}
+
+async isAuth(req:Request,res:Response){
+  res.status(HttpStatusCode.OK).json({message:"Success"})
+}
 
 }

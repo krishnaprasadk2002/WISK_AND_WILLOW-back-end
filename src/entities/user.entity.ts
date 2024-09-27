@@ -11,6 +11,8 @@ export interface IUsers {
     imageUrl?:string;
     status:Boolean;
     isGoogleAuth:Boolean;
+    refreshToken?:string,
+    expiresAt?:Date
   }
 
   export default IUsers

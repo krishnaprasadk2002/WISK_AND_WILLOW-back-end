@@ -17,6 +17,24 @@ export class UserRepository implements IUserRepository {
         return await user.save()
     }
 
+    async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
+        await Users.updateOne(
+            { _id: userId },
+            { refreshToken, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 } // 30 days
+        );
+    }
+    
+    async findOne(refreshToken: string): Promise<IUsers | null> {
+        return Users.findOne({ refreshToken });
+    }
+    
+    async removeRefreshToken(userId: string): Promise<void> {
+        await Users.updateOne(
+            { _id: userId },
+            { refreshToken: null, expiresAt: null }
+        );
+    }
+    
     async findUserEmail(email: string): Promise<IUsers | null> {
         return await Users.findOne({ email })
     }

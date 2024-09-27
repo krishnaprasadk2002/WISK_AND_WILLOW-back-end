@@ -19,6 +19,7 @@ export class UserController {
     const { name, email, password, mobile } = req.body;
     try {
       const user = await this.userUseCase.signUp(name, email, password, mobile);
+
       res.status(HttpStatusCode.CREATED).json(user);
     } catch (error) {
       if (error instanceof Error) {
@@ -28,6 +29,52 @@ export class UserController {
       }
     }
   }
+
+  async refreshToken(req: authenticatedRequest, res: Response) {
+    const { refreshToken } = req.cookies;
+
+    try {
+        const user = await this.userUseCase.validateRefreshToken(refreshToken);
+
+        if (!user) {
+            return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid refresh token" });
+        }
+
+        // Check if refresh token has expired
+        if (user.expiresAt && user.expiresAt.getTime() < Date.now()) {
+            return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Refresh token has expired" });
+        }
+
+        // Generate new access token
+        const newAccessToken = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.JWT_SECRET || 'wiskandwillow',
+            { expiresIn: '15m' }
+        );
+
+        // Generate new refresh token
+        const newRefreshToken = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET || 'wiskandwillow',
+            { expiresIn: '30d' }
+        );
+
+        await this.userUseCase.saveRefershToken(user._id.toString(), newRefreshToken);
+
+        // Set the new refresh token in a cookie
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.status(HttpStatusCode.OK).json({ accessToken: newAccessToken });
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    }
+}
+
 
   async verifyOtp(req: Request, res: Response) {
     try {

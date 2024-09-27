@@ -5,7 +5,7 @@ import IEvent from '../entities/event.entity';
 import Event from '../frameworks/models/event.model';
 import Users from '../frameworks/models/user.model';
 import { IAdminRepository } from '../interfaces/repositories/adminRepository';
-import { IDashboard, MonthlyBooking } from '../entities/dashboard.entity';
+import { DailyBooking, IDashboard, MonthlyBooking, YearlyBooking } from '../entities/dashboard.entity';
 import BookingModel from '../frameworks/models/booking.model';
 import IBooking from '../entities/booking.entity';
 import moment from 'moment';
@@ -102,36 +102,108 @@ export class AdminRepository implements IAdminRepository {
         };
     }
     
-    async getDashboardChart(): Promise<MonthlyBooking[]> {
+    // async getDashboardChart(): Promise<MonthlyBooking[]> {
        
-        const monthlyBookings = await BookingModel.aggregate([
-          {
-            $group: {
-              _id: { $month: "$created_at" },
-              bookings: { $sum: 1 }
-            }
-          },
-          {
-            $sort: { "_id": 1 } 
-          },
-          {
-            $project: {
-              month: { 
-                $let: {
-                  vars: {
-                    monthsInString: [ "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
-                  },
-                  in: { $arrayElemAt: [ "$$monthsInString", "$_id" ] }
-                }
-              },
-              bookings: 1
-            }
-          }
-        ]);
-        
+    //   const monthlyBookings = await BookingModel.aggregate([
+    //     {
+    //       $group: {
+    //         _id: { $month: "$created_at" },
+    //         bookings: { $sum: 1 }
+    //       }
+    //     },
+    //     {
+    //       $sort: { "_id": 1 } 
+    //     },
+    //     {
+    //       $project: {
+    //         month: { 
+    //           $let: {
+    //             vars: {
+    //               monthsInString: [ "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+    //             },
+    //             in: { $arrayElemAt: [ "$$monthsInString", "$_id" ] }
+    //           }
+    //         },
+    //         bookings: 1
+    //       }
+    //     }
+    //   ]);
       
-        return monthlyBookings;
-      }
+    
+    //   return monthlyBookings;
+    // }
+
+
+    async getMonthlyBookings(): Promise<MonthlyBooking[]> {
+      return BookingModel.aggregate([
+        {
+          $group: {
+            _id: { $month: "$created_at" },
+            bookings: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { "_id": 1 }
+        },
+        {
+          $project: {
+            month: { 
+              $let: {
+                vars: {
+                  monthsInString: [ "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+                },
+                in: { $arrayElemAt: [ "$$monthsInString", "$_id" ] }
+              }
+            },
+            bookings: 1
+          }
+        }
+      ]);
+    }
+  
+    // Method for daily bookings
+    async getDailyBookings(): Promise<DailyBooking[]> {
+      const Daily =  await BookingModel.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_at" } },
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+        {
+          $project: {
+            date: "$_id",
+            totalAmount: 1,
+            _id: 0,
+          },
+        },
+      ]).sort({ date: 1 });
+      console.log(Daily);
+      return Daily
+    }
+  
+    // Method for yearly bookings
+    async getYearlyBookings(): Promise<YearlyBooking[]> {
+      return BookingModel.aggregate([
+        {
+          $group: {
+            _id: { $year: "$created_at" },
+            bookings: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { "_id": 1 }
+        },
+        {
+          $project: {
+            year: "$_id",
+            bookings: 1
+          }
+        }
+      ]);
+    }
+  
+
 
       async getBookingsData(startDate: string, endDate: string): Promise<{ bookings: IBooking[] }> {
         const start = new Date(startDate);

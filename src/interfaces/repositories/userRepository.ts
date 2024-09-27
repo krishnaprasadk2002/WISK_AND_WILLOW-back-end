@@ -3,6 +3,9 @@ import IUsers from "../../entities/user.entity";
 
 export interface IUserRepository{
      createUser(name: string, email: string, password: string, mobile: number): Promise<IUsers>
+     saveRefreshToken(userId: string, refreshToken: string): Promise<void>
+     findOne(refreshToken: string): Promise<IUsers | null> 
+     removeRefreshToken(userId: string): Promise<void>
      findUserEmail(email: string): Promise<IUsers | null>
      updateUserStatus(userId: mongoose.Types.ObjectId, is_Verified: boolean):Promise<IUsers | null>
      findById(id: string): Promise<IUsers | null>

@@ -53,9 +53,6 @@ io.on("connection", (client) => {
   const cid = conversationId.conversationId
   client.join(cid)
  })
-
-       
-
 });
 
 

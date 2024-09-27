@@ -46,14 +46,12 @@ export class BookingRepository implements IBookingRepository {
     
       async getBookings(page: number, itemsPerPage: number): Promise<{ booking: IBooking[], totalItems: number }> {
         const bookings = await BookingModel.find()
-          .skip((page - 1) * itemsPerPage) 
-          .limit(itemsPerPage); 
-      
+          .skip((page - 1) * itemsPerPage)
+          .limit(itemsPerPage)  
         const totalItems = await BookingModel.countDocuments(); 
-        return { booking: bookings, totalItems: totalItems };
+        return { booking: bookings, totalItems: totalItems };   
       }
-
-      //taking data in userProfile
+      
 
       async findByEmail(email: string, status: string = 'successful'): Promise<IBooking[]> {
         return await BookingModel.find({ email, status });
@@ -61,7 +59,6 @@ export class BookingRepository implements IBookingRepository {
 
       async updateBookingPaymentDetails(id: string, updateData: { paymentOption: string, balanceAmount: number }): Promise<void> {
         try {
-            console.log(id,"kiki");
             
             const pay =  await BookingModel.updateOne(
             { _id: id },

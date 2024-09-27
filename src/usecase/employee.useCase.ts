@@ -1,3 +1,4 @@
+import IBooking from "../entities/booking.entity";
 import Employee from "../entities/employee.entity";
 import { IEmployeeRepository } from "../interfaces/repositories/employeeRepository";
 
@@ -40,6 +41,21 @@ async findByEmail(email: string): Promise<Employee | null> {
 async getEmployeeDetails():Promise<Employee[]>{
   const employeeData = await this.employeeRep.getEmployeeDetails()
   return employeeData
+}
+
+async searchEmployee(searchTerm: string): Promise<Employee[]> {
+  const employeeData = await this.employeeRep.searchEmployees(searchTerm);
+  return employeeData;
+}
+
+async getEmployeeDataById(empId:string):Promise<Employee[] | null>{
+  const EmployeeData = await this.employeeRep.getEmployeeDataById(empId)
+  return EmployeeData
+}
+
+async getEmployeeBookings(empId:string):Promise<IBooking[] | null>{
+const employeeassignedEventData=await this.employeeRep.getEmployeeBookings(empId)
+return employeeassignedEventData
 }
 
 }
