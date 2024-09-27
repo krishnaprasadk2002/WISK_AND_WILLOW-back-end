@@ -149,4 +149,4 @@ async isAuth(req:Request,res:Response){
   res.status(HttpStatusCode.OK).json({message:"Success"})
 }
 
-}
+}     
