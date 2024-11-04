@@ -9,6 +9,7 @@ import uploadCloudinary from "../frameworks/configs/cloudinary";
 import verifyGoogleIdToken from "../frameworks/utils/googleVerfication";
 import bcrypt from "bcrypt"
 import { IUserRepository } from "../interfaces/repositories/userRepository";
+import { IContactMessage } from "../entities/contact.entity";
 
 
 export class UserUseCase {
@@ -239,4 +240,7 @@ async saveRefershToken(userId:string,newToken:string):Promise<void>{
     return refreshToken;
 }
 
+async saveContactMessage(message: IContactMessage): Promise<IContactMessage> {
+  return await this.userRep.saveContactMessage(message);
+}
 }

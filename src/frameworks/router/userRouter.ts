@@ -26,5 +26,6 @@ router.post('/forgot-password',(req,res)=>userController.forgetPassword(req,res)
 router.post('/reset-password', (req, res) => userController.resetPassword(req, res));
 router.get('/isAuth',authenticateToken,(req,res)=>userController.isAuth(req,res))
 router.get('/user-details',authenticateToken,(req,res)=>userController.getUserDetailsByChat(req,res))
+router.post('/contactsave', (req, res) => userController.contactMessageSave(req, res));
 
 export default router;

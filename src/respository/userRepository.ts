@@ -4,6 +4,8 @@ import { hashPassword } from "../frameworks/utils/hashedPassword";
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt'
 import { IUserRepository } from "../interfaces/repositories/userRepository";
+import { ContactMessage } from "../frameworks/models/contact.model";
+import { IContactMessage } from "../entities/contact.entity";
 
 
 export class UserRepository implements IUserRepository {
@@ -106,6 +108,11 @@ export class UserRepository implements IUserRepository {
       async userDetails(userId:string):Promise<IUsers | null>{
        const userData = await Users.findById({_id:userId})
        return userData
+      }
+
+      async saveContactMessage(message: IContactMessage): Promise<IContactMessage> {
+        const newMessage = new ContactMessage(message);
+        return await newMessage.save();
       }
       
 }

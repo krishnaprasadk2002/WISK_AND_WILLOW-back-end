@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import IUsers from "../../entities/user.entity";
+import { IContactMessage } from "../../entities/contact.entity";
 
 export interface IUserRepository{
      createUser(name: string, email: string, password: string, mobile: number): Promise<IUsers>
@@ -19,5 +20,6 @@ export interface IUserRepository{
      updateResetPassword(userId: string, newPassword: string): Promise<void>
      clearPasswordResetToken(userId: string): Promise<void>
      userDetails(userId:string):Promise<IUsers | null>
+     saveContactMessage(message: IContactMessage): Promise<IContactMessage>
 
 }

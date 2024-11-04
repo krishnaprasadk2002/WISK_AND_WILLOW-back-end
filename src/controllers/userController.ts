@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { authenticatedRequest } from "../frameworks/middlewares/authenticateToken";
 import { HttpStatusCode } from "../enums/httpStatusCodes";
+import { IContactMessage } from "../entities/contact.entity";
 
 
 export class UserController {
@@ -300,5 +301,19 @@ export class UserController {
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
   };
+
+  async contactMessageSave(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, subject, message } = req.body;
+      const contactMessage: IContactMessage = { email, subject, message };
+
+      const savedMessage = await this.userUseCase.saveContactMessage(contactMessage);
+
+      res.status(HttpStatusCode.CREATED).json({ success: true, data: savedMessage });
+    } catch (error) {
+      console.error("Error saving contact message:", error);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, error: "Error saving contact message." });
+    }
+  }
   
 }
