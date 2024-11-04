@@ -132,7 +132,7 @@ async saveRefershToken(userId:string,newToken:string):Promise<void>{
         status: false
       } as unknown as IUsers;
 
-      await this.userRep.creteGoogleUser(userData.name, userData.email, userData.password, userData.imageUrl as string, true, true);
+      await this.userRep.creteGoogleUser(userData.name, userData.email, userData.password, userData.imageUrl as string, true, false);
       user = await this.userRep.checkUser(payload.email as string);
     }
 

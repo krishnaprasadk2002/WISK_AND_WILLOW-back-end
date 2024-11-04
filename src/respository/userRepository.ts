@@ -20,7 +20,7 @@ export class UserRepository implements IUserRepository {
     async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
         await Users.updateOne(
             { _id: userId },
-            { refreshToken, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 } // 30 days
+            { refreshToken, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 } 
         );
     }
     
